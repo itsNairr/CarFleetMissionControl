@@ -2,11 +2,13 @@ package worker
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
 	pb "github.com/itsnairr/fleet-telemetry-engine/internal/protocol"
 )
+
 
 type TelemetryWorkerPool struct {
 	numWorkers int
@@ -26,14 +28,60 @@ func NewTelemetryWorkerPool(numWorkers int, queueCapacity int) *TelemetryWorkerP
 func (p *TelemetryWorkerPool) worker(workerID int) {
 	defer p.workerWg.Done()
 
-	// range over a channel automatically stops when the channel is closed
-	for telemetry := range p.jobQueue {
-		fmt.Printf("[Worker %d] Processing VIN: %s | Speed: %.1f km/h\n", workerID, telemetry.GetVin(), telemetry.GetSpeedKmh())
-		// Simulate some processing time
+	for t := range p.jobQueue {
+		// Clean up Model Name 
+		modelName := strings.TrimPrefix(t.GetModel().String(), "VEHICLE_MODEL_TESLA_")
+		modelName = strings.TrimPrefix(modelName, "VEHICLE_MODEL_RIVIAN_")
+		modelName = strings.TrimPrefix(modelName, "VEHICLE_MODEL_")
+
+		// Battery & Power Formatting
+		soc := float32(0.0)
+		powerKw := float32(0.0)
+		if t.GetBatteryState() != nil {
+			soc = t.GetBatteryState().GetStateOfCharge()
+			powerKw = t.GetBatteryState().GetPackPower()
+		}
+
+		// Status icons and details
+		statusIcon := "🚙"
+		details := ""
+
+		if t.GetChargingState() != nil && t.GetChargingState().GetState() == pb.ChargingState_CHARGE_STATE_CHARGING {
+			statusIcon = "⚡"
+			details = fmt.Sprintf("🔌 Charging (+%.1f kW)", t.GetChargingState().GetChargingPowerKw())
+				} else if t.GetTruckState() != nil && t.GetTruckState().GetTowModeActive() {
+			statusIcon = "🚚"
+			details = fmt.Sprintf("📦 Towing (%.0f kg)", t.GetTruckState().GetEstimatedTrailerWeightKg())
+		} else if t.GetTruckState().GetTailgateOpen() {
+			statusIcon = "📦"
+			details = "🚪 Tailgate Open"
+		}
+
+
+		// Alert Flagging
+		if len(t.GetActiveAlertCodes()) > 0 {
+			statusIcon = "⚠️ "
+			details += fmt.Sprintf(" 🚨 %v", t.GetActiveAlertCodes())
+		}
+
+		// Live Mission Control Print
+		fmt.Printf("[Worker %2d] %s %-8s (%-12s) | %-16s | %5.1f km/h | 🔋 %4.1f%% (%+5.1f kW) | %s\n",
+			workerID,
+			statusIcon,
+			t.GetVin(),
+			modelName,
+			t.GetVehicleMode(),
+			t.GetSpeedKmh(),
+			soc,
+			powerKw,
+			details,
+		)
+
+		// Simulate 5ms ingestion processing (DB write, anomaly check)
 		time.Sleep(5 * time.Millisecond)
 	}
-
 }
+
 
 func (p *TelemetryWorkerPool) Start() {
 	fmt.Printf("Starting %d workers...\n", p.numWorkers)

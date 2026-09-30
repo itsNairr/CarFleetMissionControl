@@ -76,6 +76,78 @@ func (Gear) EnumDescriptor() ([]byte, []int) {
 	return file_telemetry_proto_rawDescGZIP(), []int{0}
 }
 
+type VehicleModel int32
+
+const (
+	VehicleModel_VEHICLE_MODEL_UNSPECIFIED VehicleModel = 0
+	// Tesla Models
+	VehicleModel_VEHICLE_MODEL_TESLA_MODEL_3    VehicleModel = 1
+	VehicleModel_VEHICLE_MODEL_TESLA_MODEL_Y    VehicleModel = 2
+	VehicleModel_VEHICLE_MODEL_TESLA_MODEL_S    VehicleModel = 3
+	VehicleModel_VEHICLE_MODEL_TESLA_MODEL_X    VehicleModel = 4
+	VehicleModel_VEHICLE_MODEL_TESLA_CYBERTRUCK VehicleModel = 5
+	VehicleModel_VEHICLE_MODEL_TESLA_SEMI       VehicleModel = 6
+	// Rivian Models
+	VehicleModel_VEHICLE_MODEL_RIVIAN_R1T VehicleModel = 7
+	VehicleModel_VEHICLE_MODEL_RIVIAN_R1S VehicleModel = 8
+	VehicleModel_VEHICLE_MODEL_RIVIAN_EDV VehicleModel = 9 // Electric Delivery Van (Amazon Fleet)
+)
+
+// Enum value maps for VehicleModel.
+var (
+	VehicleModel_name = map[int32]string{
+		0: "VEHICLE_MODEL_UNSPECIFIED",
+		1: "VEHICLE_MODEL_TESLA_MODEL_3",
+		2: "VEHICLE_MODEL_TESLA_MODEL_Y",
+		3: "VEHICLE_MODEL_TESLA_MODEL_S",
+		4: "VEHICLE_MODEL_TESLA_MODEL_X",
+		5: "VEHICLE_MODEL_TESLA_CYBERTRUCK",
+		6: "VEHICLE_MODEL_TESLA_SEMI",
+		7: "VEHICLE_MODEL_RIVIAN_R1T",
+		8: "VEHICLE_MODEL_RIVIAN_R1S",
+		9: "VEHICLE_MODEL_RIVIAN_EDV",
+	}
+	VehicleModel_value = map[string]int32{
+		"VEHICLE_MODEL_UNSPECIFIED":      0,
+		"VEHICLE_MODEL_TESLA_MODEL_3":    1,
+		"VEHICLE_MODEL_TESLA_MODEL_Y":    2,
+		"VEHICLE_MODEL_TESLA_MODEL_S":    3,
+		"VEHICLE_MODEL_TESLA_MODEL_X":    4,
+		"VEHICLE_MODEL_TESLA_CYBERTRUCK": 5,
+		"VEHICLE_MODEL_TESLA_SEMI":       6,
+		"VEHICLE_MODEL_RIVIAN_R1T":       7,
+		"VEHICLE_MODEL_RIVIAN_R1S":       8,
+		"VEHICLE_MODEL_RIVIAN_EDV":       9,
+	}
+)
+
+func (x VehicleModel) Enum() *VehicleModel {
+	p := new(VehicleModel)
+	*p = x
+	return p
+}
+
+func (x VehicleModel) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (VehicleModel) Descriptor() protoreflect.EnumDescriptor {
+	return file_telemetry_proto_enumTypes[1].Descriptor()
+}
+
+func (VehicleModel) Type() protoreflect.EnumType {
+	return &file_telemetry_proto_enumTypes[1]
+}
+
+func (x VehicleModel) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use VehicleModel.Descriptor instead.
+func (VehicleModel) EnumDescriptor() ([]byte, []int) {
+	return file_telemetry_proto_rawDescGZIP(), []int{1}
+}
+
 type BatteryState_BatteryStatus int32
 
 const (
@@ -115,11 +187,11 @@ func (x BatteryState_BatteryStatus) String() string {
 }
 
 func (BatteryState_BatteryStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_telemetry_proto_enumTypes[1].Descriptor()
+	return file_telemetry_proto_enumTypes[2].Descriptor()
 }
 
 func (BatteryState_BatteryStatus) Type() protoreflect.EnumType {
-	return &file_telemetry_proto_enumTypes[1]
+	return &file_telemetry_proto_enumTypes[2]
 }
 
 func (x BatteryState_BatteryStatus) Number() protoreflect.EnumNumber {
@@ -176,11 +248,11 @@ func (x ChargingState_ChargeState) String() string {
 }
 
 func (ChargingState_ChargeState) Descriptor() protoreflect.EnumDescriptor {
-	return file_telemetry_proto_enumTypes[2].Descriptor()
+	return file_telemetry_proto_enumTypes[3].Descriptor()
 }
 
 func (ChargingState_ChargeState) Type() protoreflect.EnumType {
-	return &file_telemetry_proto_enumTypes[2]
+	return &file_telemetry_proto_enumTypes[3]
 }
 
 func (x ChargingState_ChargeState) Number() protoreflect.EnumNumber {
@@ -228,11 +300,11 @@ func (x ChargingState_ChargerType) String() string {
 }
 
 func (ChargingState_ChargerType) Descriptor() protoreflect.EnumDescriptor {
-	return file_telemetry_proto_enumTypes[3].Descriptor()
+	return file_telemetry_proto_enumTypes[4].Descriptor()
 }
 
 func (ChargingState_ChargerType) Type() protoreflect.EnumType {
-	return &file_telemetry_proto_enumTypes[3]
+	return &file_telemetry_proto_enumTypes[4]
 }
 
 func (x ChargingState_ChargerType) Number() protoreflect.EnumNumber {
@@ -291,11 +363,11 @@ func (x MotorState_MotorPosition) String() string {
 }
 
 func (MotorState_MotorPosition) Descriptor() protoreflect.EnumDescriptor {
-	return file_telemetry_proto_enumTypes[4].Descriptor()
+	return file_telemetry_proto_enumTypes[5].Descriptor()
 }
 
 func (MotorState_MotorPosition) Type() protoreflect.EnumType {
-	return &file_telemetry_proto_enumTypes[4]
+	return &file_telemetry_proto_enumTypes[5]
 }
 
 func (x MotorState_MotorPosition) Number() protoreflect.EnumNumber {
@@ -343,11 +415,11 @@ func (x MotorState_MotorStatus) String() string {
 }
 
 func (MotorState_MotorStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_telemetry_proto_enumTypes[5].Descriptor()
+	return file_telemetry_proto_enumTypes[6].Descriptor()
 }
 
 func (MotorState_MotorStatus) Type() protoreflect.EnumType {
-	return &file_telemetry_proto_enumTypes[5]
+	return &file_telemetry_proto_enumTypes[6]
 }
 
 func (x MotorState_MotorStatus) Number() protoreflect.EnumNumber {
@@ -401,11 +473,11 @@ func (x SuspensionState_RideHeight) String() string {
 }
 
 func (SuspensionState_RideHeight) Descriptor() protoreflect.EnumDescriptor {
-	return file_telemetry_proto_enumTypes[6].Descriptor()
+	return file_telemetry_proto_enumTypes[7].Descriptor()
 }
 
 func (SuspensionState_RideHeight) Type() protoreflect.EnumType {
-	return &file_telemetry_proto_enumTypes[6]
+	return &file_telemetry_proto_enumTypes[7]
 }
 
 func (x SuspensionState_RideHeight) Number() protoreflect.EnumNumber {
@@ -456,11 +528,11 @@ func (x VehicleAlert_AlertLevel) String() string {
 }
 
 func (VehicleAlert_AlertLevel) Descriptor() protoreflect.EnumDescriptor {
-	return file_telemetry_proto_enumTypes[7].Descriptor()
+	return file_telemetry_proto_enumTypes[8].Descriptor()
 }
 
 func (VehicleAlert_AlertLevel) Type() protoreflect.EnumType {
-	return &file_telemetry_proto_enumTypes[7]
+	return &file_telemetry_proto_enumTypes[8]
 }
 
 func (x VehicleAlert_AlertLevel) Number() protoreflect.EnumNumber {
@@ -1385,26 +1457,27 @@ type VehicleTelemetry struct {
 	Vin         string                 `protobuf:"bytes,1,opt,name=vin,proto3" json:"vin,omitempty"`
 	TimestampMs int64                  `protobuf:"varint,2,opt,name=timestamp_ms,json=timestampMs,proto3" json:"timestamp_ms,omitempty"`
 	Location    *GPSLocation           `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
+	Model       VehicleModel           `protobuf:"varint,4,opt,name=model,proto3,enum=fleet.telemetry.v1.VehicleModel" json:"model,omitempty"`
 	// Dynamics & Driver Controls
-	Gear             Gear    `protobuf:"varint,4,opt,name=gear,proto3,enum=fleet.telemetry.v1.Gear" json:"gear,omitempty"`
-	SpeedKmh         float32 `protobuf:"fixed32,5,opt,name=speed_kmh,json=speedKmh,proto3" json:"speed_kmh,omitempty"`
-	BrakePedalPct    float32 `protobuf:"fixed32,6,opt,name=brake_pedal_pct,json=brakePedalPct,proto3" json:"brake_pedal_pct,omitempty"`
-	OdometerKm       float32 `protobuf:"fixed32,7,opt,name=odometer_km,json=odometerKm,proto3" json:"odometer_km,omitempty"`
-	RemainingRangeKm float32 `protobuf:"fixed32,8,opt,name=remaining_range_km,json=remainingRangeKm,proto3" json:"remaining_range_km,omitempty"`
-	VehicleMode      string  `protobuf:"bytes,9,opt,name=vehicle_mode,json=vehicleMode,proto3" json:"vehicle_mode,omitempty"` // e.g., "Standard", "Chill", "All-Terrain", "Conserve", "Tow"
+	Gear             Gear    `protobuf:"varint,5,opt,name=gear,proto3,enum=fleet.telemetry.v1.Gear" json:"gear,omitempty"`
+	SpeedKmh         float32 `protobuf:"fixed32,6,opt,name=speed_kmh,json=speedKmh,proto3" json:"speed_kmh,omitempty"`
+	BrakePedalPct    float32 `protobuf:"fixed32,7,opt,name=brake_pedal_pct,json=brakePedalPct,proto3" json:"brake_pedal_pct,omitempty"`
+	OdometerKm       float32 `protobuf:"fixed32,8,opt,name=odometer_km,json=odometerKm,proto3" json:"odometer_km,omitempty"`
+	RemainingRangeKm float32 `protobuf:"fixed32,9,opt,name=remaining_range_km,json=remainingRangeKm,proto3" json:"remaining_range_km,omitempty"`
+	VehicleMode      string  `protobuf:"bytes,10,opt,name=vehicle_mode,json=vehicleMode,proto3" json:"vehicle_mode,omitempty"` // e.g., "Standard", "Chill", "All-Terrain", "Conserve", "Tow"
 	// Common EV Subsystems (All vehicles: Sedan, SUV, Truck, Van)
-	BatteryState  *BatteryState  `protobuf:"bytes,10,opt,name=battery_state,json=batteryState,proto3" json:"battery_state,omitempty"`
-	ChargingState *ChargingState `protobuf:"bytes,11,opt,name=charging_state,json=chargingState,proto3" json:"charging_state,omitempty"`
-	MotorStates   []*MotorState  `protobuf:"bytes,12,rep,name=motor_states,json=motorStates,proto3" json:"motor_states,omitempty"` // 1 (RWD), 2 (Dual-Motor AWD), or 4 (Quad-Motor)
-	TirePressure  *TirePressure  `protobuf:"bytes,13,opt,name=tire_pressure,json=tirePressure,proto3" json:"tire_pressure,omitempty"`
-	CabinState    *CabinState    `protobuf:"bytes,14,opt,name=cabin_state,json=cabinState,proto3" json:"cabin_state,omitempty"`
+	BatteryState  *BatteryState  `protobuf:"bytes,11,opt,name=battery_state,json=batteryState,proto3" json:"battery_state,omitempty"`
+	ChargingState *ChargingState `protobuf:"bytes,12,opt,name=charging_state,json=chargingState,proto3" json:"charging_state,omitempty"`
+	MotorStates   []*MotorState  `protobuf:"bytes,13,rep,name=motor_states,json=motorStates,proto3" json:"motor_states,omitempty"` // 1 (RWD), 2 (Dual-Motor AWD), or 4 (Quad-Motor)
+	TirePressure  *TirePressure  `protobuf:"bytes,14,opt,name=tire_pressure,json=tirePressure,proto3" json:"tire_pressure,omitempty"`
+	CabinState    *CabinState    `protobuf:"bytes,15,opt,name=cabin_state,json=cabinState,proto3" json:"cabin_state,omitempty"`
 	// Optional: Active/Air Suspension (Trucks, SUVs, and high-end EVs)
-	SuspensionState *SuspensionState `protobuf:"bytes,15,opt,name=suspension_state,json=suspensionState,proto3" json:"suspension_state,omitempty"`
+	SuspensionState *SuspensionState `protobuf:"bytes,16,opt,name=suspension_state,json=suspensionState,proto3" json:"suspension_state,omitempty"`
 	// Explicit Truck-Specific Subsystem (Rivian R1T, F-150 Lightning, Cybertruck)
 	// Left unset/nil for passenger sedans like Tesla Model 3.
-	TruckState *TruckState `protobuf:"bytes,16,opt,name=truck_state,json=truckState,proto3" json:"truck_state,omitempty"`
+	TruckState *TruckState `protobuf:"bytes,17,opt,name=truck_state,json=truckState,proto3" json:"truck_state,omitempty"`
 	// Active Diagnostic Trouble Codes / Alerts
-	ActiveAlertCodes []string `protobuf:"bytes,17,rep,name=active_alert_codes,json=activeAlertCodes,proto3" json:"active_alert_codes,omitempty"`
+	ActiveAlertCodes []string `protobuf:"bytes,18,rep,name=active_alert_codes,json=activeAlertCodes,proto3" json:"active_alert_codes,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -1458,6 +1531,13 @@ func (x *VehicleTelemetry) GetLocation() *GPSLocation {
 		return x.Location
 	}
 	return nil
+}
+
+func (x *VehicleTelemetry) GetModel() VehicleModel {
+	if x != nil {
+		return x.Model
+	}
+	return VehicleModel_VEHICLE_MODEL_UNSPECIFIED
 }
 
 func (x *VehicleTelemetry) GetGear() Gear {
@@ -1792,29 +1872,30 @@ const file_telemetry_proto_rawDesc = "" +
 	"\x0ftow_mode_active\x18\b \x01(\bR\rtowModeActive\x12,\n" +
 	"\x12bed_outlets_active\x18\t \x01(\bR\x10bedOutletsActive\x12/\n" +
 	"\x14bed_outlets_power_kw\x18\n" +
-	" \x01(\x02R\x11bedOutletsPowerKw\"\x84\a\n" +
+	" \x01(\x02R\x11bedOutletsPowerKw\"\xbc\a\n" +
 	"\x10VehicleTelemetry\x12\x10\n" +
 	"\x03vin\x18\x01 \x01(\tR\x03vin\x12!\n" +
 	"\ftimestamp_ms\x18\x02 \x01(\x03R\vtimestampMs\x12;\n" +
-	"\blocation\x18\x03 \x01(\v2\x1f.fleet.telemetry.v1.GPSLocationR\blocation\x12,\n" +
-	"\x04gear\x18\x04 \x01(\x0e2\x18.fleet.telemetry.v1.GearR\x04gear\x12\x1b\n" +
-	"\tspeed_kmh\x18\x05 \x01(\x02R\bspeedKmh\x12&\n" +
-	"\x0fbrake_pedal_pct\x18\x06 \x01(\x02R\rbrakePedalPct\x12\x1f\n" +
-	"\vodometer_km\x18\a \x01(\x02R\n" +
+	"\blocation\x18\x03 \x01(\v2\x1f.fleet.telemetry.v1.GPSLocationR\blocation\x126\n" +
+	"\x05model\x18\x04 \x01(\x0e2 .fleet.telemetry.v1.VehicleModelR\x05model\x12,\n" +
+	"\x04gear\x18\x05 \x01(\x0e2\x18.fleet.telemetry.v1.GearR\x04gear\x12\x1b\n" +
+	"\tspeed_kmh\x18\x06 \x01(\x02R\bspeedKmh\x12&\n" +
+	"\x0fbrake_pedal_pct\x18\a \x01(\x02R\rbrakePedalPct\x12\x1f\n" +
+	"\vodometer_km\x18\b \x01(\x02R\n" +
 	"odometerKm\x12,\n" +
-	"\x12remaining_range_km\x18\b \x01(\x02R\x10remainingRangeKm\x12!\n" +
-	"\fvehicle_mode\x18\t \x01(\tR\vvehicleMode\x12E\n" +
-	"\rbattery_state\x18\n" +
-	" \x01(\v2 .fleet.telemetry.v1.BatteryStateR\fbatteryState\x12H\n" +
-	"\x0echarging_state\x18\v \x01(\v2!.fleet.telemetry.v1.ChargingStateR\rchargingState\x12A\n" +
-	"\fmotor_states\x18\f \x03(\v2\x1e.fleet.telemetry.v1.MotorStateR\vmotorStates\x12E\n" +
-	"\rtire_pressure\x18\r \x01(\v2 .fleet.telemetry.v1.TirePressureR\ftirePressure\x12?\n" +
-	"\vcabin_state\x18\x0e \x01(\v2\x1e.fleet.telemetry.v1.CabinStateR\n" +
+	"\x12remaining_range_km\x18\t \x01(\x02R\x10remainingRangeKm\x12!\n" +
+	"\fvehicle_mode\x18\n" +
+	" \x01(\tR\vvehicleMode\x12E\n" +
+	"\rbattery_state\x18\v \x01(\v2 .fleet.telemetry.v1.BatteryStateR\fbatteryState\x12H\n" +
+	"\x0echarging_state\x18\f \x01(\v2!.fleet.telemetry.v1.ChargingStateR\rchargingState\x12A\n" +
+	"\fmotor_states\x18\r \x03(\v2\x1e.fleet.telemetry.v1.MotorStateR\vmotorStates\x12E\n" +
+	"\rtire_pressure\x18\x0e \x01(\v2 .fleet.telemetry.v1.TirePressureR\ftirePressure\x12?\n" +
+	"\vcabin_state\x18\x0f \x01(\v2\x1e.fleet.telemetry.v1.CabinStateR\n" +
 	"cabinState\x12N\n" +
-	"\x10suspension_state\x18\x0f \x01(\v2#.fleet.telemetry.v1.SuspensionStateR\x0fsuspensionState\x12?\n" +
-	"\vtruck_state\x18\x10 \x01(\v2\x1e.fleet.telemetry.v1.TruckStateR\n" +
+	"\x10suspension_state\x18\x10 \x01(\v2#.fleet.telemetry.v1.SuspensionStateR\x0fsuspensionState\x12?\n" +
+	"\vtruck_state\x18\x11 \x01(\v2\x1e.fleet.telemetry.v1.TruckStateR\n" +
 	"truckState\x12,\n" +
-	"\x12active_alert_codes\x18\x11 \x03(\tR\x10activeAlertCodes\"\x8e\x04\n" +
+	"\x12active_alert_codes\x18\x12 \x03(\tR\x10activeAlertCodes\"\x8e\x04\n" +
 	"\fVehicleAlert\x12\x10\n" +
 	"\x03vin\x18\x01 \x01(\tR\x03vin\x12!\n" +
 	"\ftimestamp_ms\x18\x02 \x01(\x03R\vtimestampMs\x12;\n" +
@@ -1839,7 +1920,18 @@ const file_telemetry_proto_rawDesc = "" +
 	"\fGEAR_REVERSE\x10\x02\x12\x10\n" +
 	"\fGEAR_NEUTRAL\x10\x03\x12\x0e\n" +
 	"\n" +
-	"GEAR_DRIVE\x10\x04B>Z<github.com/itsnairr/fleet-telemetry-engine/internal/protocolb\x06proto3"
+	"GEAR_DRIVE\x10\x04*\xcd\x02\n" +
+	"\fVehicleModel\x12\x1d\n" +
+	"\x19VEHICLE_MODEL_UNSPECIFIED\x10\x00\x12\x1f\n" +
+	"\x1bVEHICLE_MODEL_TESLA_MODEL_3\x10\x01\x12\x1f\n" +
+	"\x1bVEHICLE_MODEL_TESLA_MODEL_Y\x10\x02\x12\x1f\n" +
+	"\x1bVEHICLE_MODEL_TESLA_MODEL_S\x10\x03\x12\x1f\n" +
+	"\x1bVEHICLE_MODEL_TESLA_MODEL_X\x10\x04\x12\"\n" +
+	"\x1eVEHICLE_MODEL_TESLA_CYBERTRUCK\x10\x05\x12\x1c\n" +
+	"\x18VEHICLE_MODEL_TESLA_SEMI\x10\x06\x12\x1c\n" +
+	"\x18VEHICLE_MODEL_RIVIAN_R1T\x10\a\x12\x1c\n" +
+	"\x18VEHICLE_MODEL_RIVIAN_R1S\x10\b\x12\x1c\n" +
+	"\x18VEHICLE_MODEL_RIVIAN_EDV\x10\tB>Z<github.com/itsnairr/fleet-telemetry-engine/internal/protocolb\x06proto3"
 
 var (
 	file_telemetry_proto_rawDescOnce sync.Once
@@ -1853,53 +1945,55 @@ func file_telemetry_proto_rawDescGZIP() []byte {
 	return file_telemetry_proto_rawDescData
 }
 
-var file_telemetry_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
+var file_telemetry_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
 var file_telemetry_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_telemetry_proto_goTypes = []any{
 	(Gear)(0),                       // 0: fleet.telemetry.v1.Gear
-	(BatteryState_BatteryStatus)(0), // 1: fleet.telemetry.v1.BatteryState.BatteryStatus
-	(ChargingState_ChargeState)(0),  // 2: fleet.telemetry.v1.ChargingState.ChargeState
-	(ChargingState_ChargerType)(0),  // 3: fleet.telemetry.v1.ChargingState.ChargerType
-	(MotorState_MotorPosition)(0),   // 4: fleet.telemetry.v1.MotorState.MotorPosition
-	(MotorState_MotorStatus)(0),     // 5: fleet.telemetry.v1.MotorState.MotorStatus
-	(SuspensionState_RideHeight)(0), // 6: fleet.telemetry.v1.SuspensionState.RideHeight
-	(VehicleAlert_AlertLevel)(0),    // 7: fleet.telemetry.v1.VehicleAlert.AlertLevel
-	(*GPSLocation)(nil),             // 8: fleet.telemetry.v1.GPSLocation
-	(*BatteryState)(nil),            // 9: fleet.telemetry.v1.BatteryState
-	(*ChargingState)(nil),           // 10: fleet.telemetry.v1.ChargingState
-	(*MotorState)(nil),              // 11: fleet.telemetry.v1.MotorState
-	(*TirePressure)(nil),            // 12: fleet.telemetry.v1.TirePressure
-	(*CabinState)(nil),              // 13: fleet.telemetry.v1.CabinState
-	(*SuspensionState)(nil),         // 14: fleet.telemetry.v1.SuspensionState
-	(*TruckState)(nil),              // 15: fleet.telemetry.v1.TruckState
-	(*VehicleTelemetry)(nil),        // 16: fleet.telemetry.v1.VehicleTelemetry
-	(*VehicleAlert)(nil),            // 17: fleet.telemetry.v1.VehicleAlert
-	nil,                             // 18: fleet.telemetry.v1.VehicleAlert.MetadataEntry
+	(VehicleModel)(0),               // 1: fleet.telemetry.v1.VehicleModel
+	(BatteryState_BatteryStatus)(0), // 2: fleet.telemetry.v1.BatteryState.BatteryStatus
+	(ChargingState_ChargeState)(0),  // 3: fleet.telemetry.v1.ChargingState.ChargeState
+	(ChargingState_ChargerType)(0),  // 4: fleet.telemetry.v1.ChargingState.ChargerType
+	(MotorState_MotorPosition)(0),   // 5: fleet.telemetry.v1.MotorState.MotorPosition
+	(MotorState_MotorStatus)(0),     // 6: fleet.telemetry.v1.MotorState.MotorStatus
+	(SuspensionState_RideHeight)(0), // 7: fleet.telemetry.v1.SuspensionState.RideHeight
+	(VehicleAlert_AlertLevel)(0),    // 8: fleet.telemetry.v1.VehicleAlert.AlertLevel
+	(*GPSLocation)(nil),             // 9: fleet.telemetry.v1.GPSLocation
+	(*BatteryState)(nil),            // 10: fleet.telemetry.v1.BatteryState
+	(*ChargingState)(nil),           // 11: fleet.telemetry.v1.ChargingState
+	(*MotorState)(nil),              // 12: fleet.telemetry.v1.MotorState
+	(*TirePressure)(nil),            // 13: fleet.telemetry.v1.TirePressure
+	(*CabinState)(nil),              // 14: fleet.telemetry.v1.CabinState
+	(*SuspensionState)(nil),         // 15: fleet.telemetry.v1.SuspensionState
+	(*TruckState)(nil),              // 16: fleet.telemetry.v1.TruckState
+	(*VehicleTelemetry)(nil),        // 17: fleet.telemetry.v1.VehicleTelemetry
+	(*VehicleAlert)(nil),            // 18: fleet.telemetry.v1.VehicleAlert
+	nil,                             // 19: fleet.telemetry.v1.VehicleAlert.MetadataEntry
 }
 var file_telemetry_proto_depIdxs = []int32{
-	1,  // 0: fleet.telemetry.v1.BatteryState.pack_status:type_name -> fleet.telemetry.v1.BatteryState.BatteryStatus
-	2,  // 1: fleet.telemetry.v1.ChargingState.state:type_name -> fleet.telemetry.v1.ChargingState.ChargeState
-	3,  // 2: fleet.telemetry.v1.ChargingState.charger_type:type_name -> fleet.telemetry.v1.ChargingState.ChargerType
-	4,  // 3: fleet.telemetry.v1.MotorState.position:type_name -> fleet.telemetry.v1.MotorState.MotorPosition
-	5,  // 4: fleet.telemetry.v1.MotorState.status:type_name -> fleet.telemetry.v1.MotorState.MotorStatus
-	6,  // 5: fleet.telemetry.v1.SuspensionState.ride_height:type_name -> fleet.telemetry.v1.SuspensionState.RideHeight
-	8,  // 6: fleet.telemetry.v1.VehicleTelemetry.location:type_name -> fleet.telemetry.v1.GPSLocation
-	0,  // 7: fleet.telemetry.v1.VehicleTelemetry.gear:type_name -> fleet.telemetry.v1.Gear
-	9,  // 8: fleet.telemetry.v1.VehicleTelemetry.battery_state:type_name -> fleet.telemetry.v1.BatteryState
-	10, // 9: fleet.telemetry.v1.VehicleTelemetry.charging_state:type_name -> fleet.telemetry.v1.ChargingState
-	11, // 10: fleet.telemetry.v1.VehicleTelemetry.motor_states:type_name -> fleet.telemetry.v1.MotorState
-	12, // 11: fleet.telemetry.v1.VehicleTelemetry.tire_pressure:type_name -> fleet.telemetry.v1.TirePressure
-	13, // 12: fleet.telemetry.v1.VehicleTelemetry.cabin_state:type_name -> fleet.telemetry.v1.CabinState
-	14, // 13: fleet.telemetry.v1.VehicleTelemetry.suspension_state:type_name -> fleet.telemetry.v1.SuspensionState
-	15, // 14: fleet.telemetry.v1.VehicleTelemetry.truck_state:type_name -> fleet.telemetry.v1.TruckState
-	8,  // 15: fleet.telemetry.v1.VehicleAlert.location:type_name -> fleet.telemetry.v1.GPSLocation
-	7,  // 16: fleet.telemetry.v1.VehicleAlert.level:type_name -> fleet.telemetry.v1.VehicleAlert.AlertLevel
-	18, // 17: fleet.telemetry.v1.VehicleAlert.metadata:type_name -> fleet.telemetry.v1.VehicleAlert.MetadataEntry
-	18, // [18:18] is the sub-list for method output_type
-	18, // [18:18] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	2,  // 0: fleet.telemetry.v1.BatteryState.pack_status:type_name -> fleet.telemetry.v1.BatteryState.BatteryStatus
+	3,  // 1: fleet.telemetry.v1.ChargingState.state:type_name -> fleet.telemetry.v1.ChargingState.ChargeState
+	4,  // 2: fleet.telemetry.v1.ChargingState.charger_type:type_name -> fleet.telemetry.v1.ChargingState.ChargerType
+	5,  // 3: fleet.telemetry.v1.MotorState.position:type_name -> fleet.telemetry.v1.MotorState.MotorPosition
+	6,  // 4: fleet.telemetry.v1.MotorState.status:type_name -> fleet.telemetry.v1.MotorState.MotorStatus
+	7,  // 5: fleet.telemetry.v1.SuspensionState.ride_height:type_name -> fleet.telemetry.v1.SuspensionState.RideHeight
+	9,  // 6: fleet.telemetry.v1.VehicleTelemetry.location:type_name -> fleet.telemetry.v1.GPSLocation
+	1,  // 7: fleet.telemetry.v1.VehicleTelemetry.model:type_name -> fleet.telemetry.v1.VehicleModel
+	0,  // 8: fleet.telemetry.v1.VehicleTelemetry.gear:type_name -> fleet.telemetry.v1.Gear
+	10, // 9: fleet.telemetry.v1.VehicleTelemetry.battery_state:type_name -> fleet.telemetry.v1.BatteryState
+	11, // 10: fleet.telemetry.v1.VehicleTelemetry.charging_state:type_name -> fleet.telemetry.v1.ChargingState
+	12, // 11: fleet.telemetry.v1.VehicleTelemetry.motor_states:type_name -> fleet.telemetry.v1.MotorState
+	13, // 12: fleet.telemetry.v1.VehicleTelemetry.tire_pressure:type_name -> fleet.telemetry.v1.TirePressure
+	14, // 13: fleet.telemetry.v1.VehicleTelemetry.cabin_state:type_name -> fleet.telemetry.v1.CabinState
+	15, // 14: fleet.telemetry.v1.VehicleTelemetry.suspension_state:type_name -> fleet.telemetry.v1.SuspensionState
+	16, // 15: fleet.telemetry.v1.VehicleTelemetry.truck_state:type_name -> fleet.telemetry.v1.TruckState
+	9,  // 16: fleet.telemetry.v1.VehicleAlert.location:type_name -> fleet.telemetry.v1.GPSLocation
+	8,  // 17: fleet.telemetry.v1.VehicleAlert.level:type_name -> fleet.telemetry.v1.VehicleAlert.AlertLevel
+	19, // 18: fleet.telemetry.v1.VehicleAlert.metadata:type_name -> fleet.telemetry.v1.VehicleAlert.MetadataEntry
+	19, // [19:19] is the sub-list for method output_type
+	19, // [19:19] is the sub-list for method input_type
+	19, // [19:19] is the sub-list for extension type_name
+	19, // [19:19] is the sub-list for extension extendee
+	0,  // [0:19] is the sub-list for field type_name
 }
 
 func init() { file_telemetry_proto_init() }
@@ -1912,7 +2006,7 @@ func file_telemetry_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_telemetry_proto_rawDesc), len(file_telemetry_proto_rawDesc)),
-			NumEnums:      8,
+			NumEnums:      9,
 			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,

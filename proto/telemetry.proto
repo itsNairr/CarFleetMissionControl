@@ -23,6 +23,23 @@ enum Gear {
   GEAR_DRIVE = 4;
 }
 
+enum VehicleModel {
+  VEHICLE_MODEL_UNSPECIFIED = 0;
+
+  // Tesla Models
+  VEHICLE_MODEL_TESLA_MODEL_3 = 1;
+  VEHICLE_MODEL_TESLA_MODEL_Y = 2;
+  VEHICLE_MODEL_TESLA_MODEL_S = 3;
+  VEHICLE_MODEL_TESLA_MODEL_X = 4;
+  VEHICLE_MODEL_TESLA_CYBERTRUCK = 5;
+  VEHICLE_MODEL_TESLA_SEMI = 6;
+
+  // Rivian Models
+  VEHICLE_MODEL_RIVIAN_R1T = 7;
+  VEHICLE_MODEL_RIVIAN_R1S = 8;
+  VEHICLE_MODEL_RIVIAN_EDV = 9; // Electric Delivery Van (Amazon Fleet)
+}
+
 message BatteryState {
   enum BatteryStatus {
     BATTERY_STATUS_UNSPECIFIED = 0;
@@ -186,31 +203,32 @@ message VehicleTelemetry {
   string vin = 1;
   int64 timestamp_ms = 2;
   GPSLocation location = 3;
+  VehicleModel model = 4;
 
   // Dynamics & Driver Controls
-  Gear gear = 4;
-  float speed_kmh = 5;
-  float brake_pedal_pct = 6;
-  float odometer_km = 7;
-  float remaining_range_km = 8;
-  string vehicle_mode = 9; // e.g., "Standard", "Chill", "All-Terrain", "Conserve", "Tow"
+  Gear gear = 5;
+  float speed_kmh = 6;
+  float brake_pedal_pct = 7;
+  float odometer_km = 8;
+  float remaining_range_km = 9;
+  string vehicle_mode = 10; // e.g., "Standard", "Chill", "All-Terrain", "Conserve", "Tow"
 
   // Common EV Subsystems (All vehicles: Sedan, SUV, Truck, Van)
-  BatteryState battery_state = 10;
-  ChargingState charging_state = 11;
-  repeated MotorState motor_states = 12; // 1 (RWD), 2 (Dual-Motor AWD), or 4 (Quad-Motor)
-  TirePressure tire_pressure = 13;
-  CabinState cabin_state = 14;
+  BatteryState battery_state = 11;
+  ChargingState charging_state = 12;
+  repeated MotorState motor_states = 13; // 1 (RWD), 2 (Dual-Motor AWD), or 4 (Quad-Motor)
+  TirePressure tire_pressure = 14;
+  CabinState cabin_state = 15;
 
   // Optional: Active/Air Suspension (Trucks, SUVs, and high-end EVs)
-  SuspensionState suspension_state = 15;
+  SuspensionState suspension_state = 16;
 
   // Explicit Truck-Specific Subsystem (Rivian R1T, F-150 Lightning, Cybertruck)
   // Left unset/nil for passenger sedans like Tesla Model 3.
-  TruckState truck_state = 16;
+  TruckState truck_state = 17;
 
   // Active Diagnostic Trouble Codes / Alerts
-  repeated string active_alert_codes = 17;
+  repeated string active_alert_codes = 18;
 }
 
 message VehicleAlert {

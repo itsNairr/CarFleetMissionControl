@@ -3,93 +3,84 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
-	"google.golang.org/protobuf/proto"
-	"math/rand"
 	"net"
 	"sync"
 	"time"
 
+	"google.golang.org/protobuf/proto"
+
 	pb "github.com/itsnairr/fleet-telemetry-engine/internal/protocol"
+	"github.com/itsnairr/fleet-telemetry-engine/internal/simulator"
 )
 
+
 func main() {
-	numVehicles := 20
+	// A sample of real-world fleet vehicles
+	fleetConfigs := []struct {
+		model    pb.VehicleModel
+		scenario simulator.Scenario
+	}{
+		// {pb.VehicleModel_VEHICLE_MODEL_TESLA_CYBERTRUCK, simulator.ScenarioHeavyTowing},
+		// {pb.VehicleModel_VEHICLE_MODEL_RIVIAN_R1T, simulator.ScenarioOffRoadAdventure},
+		// {pb.VehicleModel_VEHICLE_MODEL_TESLA_MODEL_3, simulator.ScenarioHighwayCruising},
+		{pb.VehicleModel_VEHICLE_MODEL_TESLA_MODEL_Y, simulator.ScenarioSupercharging},
+		// {pb.VehicleModel_VEHICLE_MODEL_RIVIAN_EDV, simulator.ScenarioDeliveryStopCycle},
+		// {pb.VehicleModel_VEHICLE_MODEL_TESLA_MODEL_S, simulator.ScenarioTirePuncture},
+		// {pb.VehicleModel_VEHICLE_MODEL_RIVIAN_R1S, simulator.ScenarioWinterColdSoak},
+		// {pb.VehicleModel_VEHICLE_MODEL_TESLA_MODEL_X, simulator.ScenarioAuxBatterySag},
+		// {pb.VehicleModel_VEHICLE_MODEL_TESLA_MODEL_3, simulator.ScenarioUrbanCommute},
+		// {pb.VehicleModel_VEHICLE_MODEL_RIVIAN_R1T, simulator.ScenarioV2LWorksite},
+	}
+
 	var wg sync.WaitGroup
 
-	for i := 1; i <= numVehicles; i++ {
+	for i, cfg := range fleetConfigs {
 		wg.Add(1)
-		vin := fmt.Sprintf("SIM-%04d", i)
-		go simulateVehicle(vin, "localhost:8080", &wg)
+		vin := fmt.Sprintf("SIM-%04d", i+1)
+		vehicle := simulator.NewSimulatedVehicle(vin, cfg.model, cfg.scenario)
+		go simulateVehicle(vehicle, "localhost:8080", &wg)
 	}
 
 	wg.Wait()
-
 }
 
-func simulateVehicle(vin string, serverAddr string, wg *sync.WaitGroup) {
+
+func simulateVehicle(v *simulator.SimulatedVehicle, serverAddr string, wg *sync.WaitGroup) {
 	defer wg.Done()
-	conn, err := net.Dial("tcp", serverAddr) //connect
+	conn, err := net.Dial("tcp", serverAddr)
 	if err != nil {
-		fmt.Printf("Failed to connect to gateway: %v\n", err)
+		fmt.Printf("[%s] Failed to connect to gateway: %v\n", v.Vin, err)
 		return
 	}
 	defer conn.Close()
 
-	for {
-		speed := float32(rand.Float32() * 120.0) // 0 to 120 km/h
-		gear := pb.Gear_GEAR_DRIVE
-		if speed < 1.0 {
-			gear = pb.Gear_GEAR_PARK
-		}
+	// Initialize a 1 Hz ticker (rhythmic 1-second ticks)
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop() // Cleans up the timer resource when connection terminates
 
-		msg := &pb.VehicleTelemetry{
-			Vin:         vin,
-			TimestampMs: time.Now().UnixMilli(),
-			SpeedKmh:    speed,
-			Gear:        gear,
-			VehicleMode: "Standard",
+	// Loop blocks on ticker channel instead of sleeping at the bottom
+	for range ticker.C {
+		//Advance vehicle physics & snapshot telemetry
+		v.Tick()
+		msg := v.ToTelemetry()
 
-			// Random GPS wandering near San Francisco
-			Location: &pb.GPSLocation{
-				Latitude:  37.7749 + (rand.Float64()-0.5)*0.01,
-				Longitude: -122.4194 + (rand.Float64()-0.5)*0.01,
-				Speed:     float64(speed),
-			},
-
-			// Realistic EV Battery Telemetry
-			BatteryState: &pb.BatteryState{
-				StateOfCharge:      float32(50.0 + rand.Float32()*45.0),  // 50% - 95%
-				PackVoltage:        float32(380.0 + rand.Float32()*20.0), // ~400V architecture
-				PackCurrent:        float32(20.0 + rand.Float32()*150.0), // 20A - 170A draw
-				PackTemperature:    float32(28.0 + rand.Float32()*8.0),   // 28°C - 36°C
-				MaxCellTemperature: float32(30.0 + rand.Float32()*10.0),
-				PackStatus:         pb.BatteryState_BATTERY_STATUS_DISCHARGING,
-			},
-
-			// 4-Corner Tire Pressures (~2.8 bar / ~41 psi)
-			TirePressure: &pb.TirePressure{
-				FrontLeftBar:  2.8 + (rand.Float32()-0.5)*0.1,
-				FrontRightBar: 2.8 + (rand.Float32()-0.5)*0.1,
-				RearLeftBar:   2.8 + (rand.Float32()-0.5)*0.1,
-				RearRightBar:  2.8 + (rand.Float32()-0.5)*0.1,
-			},
-		}
-
+		// Serialize Protobuf
 		data, err := proto.Marshal(msg)
 		if err != nil {
-			fmt.Println("Marshal error:", err)
+			fmt.Printf("[%s] Marshal error: %v\n", v.Vin, err)
 			return
 		}
 
-		// Create a 4-byte header and write the length into it:
+		// 4-byte length-prefix framing
 		header := make([]byte, 4)
 		binary.BigEndian.PutUint32(header, uint32(len(data)))
 
-		// Send the 4-byte header, then the protobuf data:
-		conn.Write(header)
-		conn.Write(data)
-
-		time.Sleep(1 * time.Second)
+		if _, err := conn.Write(header); err != nil {
+			return
+		}
+		if _, err := conn.Write(data); err != nil {
+			return
+		}
 	}
-
 }
+
