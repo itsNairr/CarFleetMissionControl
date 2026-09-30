@@ -1,22 +1,57 @@
 package main
 
 import (
+	"encoding/binary"
+	"errors"
 	"fmt"
+	"io"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
-	"errors"
 
+	pb "github.com/itsnairr/fleet-telemetry-engine/internal/protocol"
 	"github.com/itsnairr/fleet-telemetry-engine/internal/worker"
+	"google.golang.org/protobuf/proto"
 )
+
 
 func handleConnection(conn net.Conn, pool *worker.TelemetryWorkerPool) {
 	defer conn.Close()
 
 	fmt.Printf("New vehicle connected: %s\n", conn.RemoteAddr().String())
 
-	conn.RemoteAddr().String()
+	//infinite loop to read data from the connected vehicle
+	for {
+		// Read the 4-byte header
+		header := make([]byte, 4)
+		_, err := io.ReadFull(conn, header)
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				fmt.Println("Vehicle disconnected cleanly.")
+			} else {
+				fmt.Printf("Connection read error: %v\n", err)
+			}
+			return // Exit the goroutine when the vehicle disconnects
+		}
+		// Decode the 4 bytes into a uint32 integer (Big-Endian is network standard):
+		messageLength := binary.BigEndian.Uint32(header)
+		// Read EXACTLY that many bytes for the protobuf payload
+		payload := make([]byte, messageLength)
+		_, err = io.ReadFull(conn, payload)
+		if err != nil {
+			fmt.Printf("Failed to read payload: %v\n", err)
+			return
+		}
+		// Unmarshal into Protobuf struct
+		var telemetry pb.VehicleTelemetry
+		if err := proto.Unmarshal(payload, &telemetry); err != nil {
+			fmt.Printf("Failed to unmarshal protobuf: %v\n", err)
+			continue
+		}
+		
+		pool.Enqueue(&telemetry)
+	}
 	
 }
 
