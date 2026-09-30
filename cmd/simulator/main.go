@@ -3,17 +3,32 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
+	"google.golang.org/protobuf/proto"
 	"math/rand"
 	"net"
+	"sync"
 	"time"
-
-	"google.golang.org/protobuf/proto"
 
 	pb "github.com/itsnairr/fleet-telemetry-engine/internal/protocol"
 )
 
 func main() {
-	conn, err := net.Dial("tcp", "localhost:8080") //connect
+	numVehicles := 20
+	var wg sync.WaitGroup
+
+	for i := 1; i <= numVehicles; i++ {
+		wg.Add(1)
+		vin := fmt.Sprintf("SIM-%04d", i)
+		go simulateVehicle(vin, "localhost:8080", &wg)
+	}
+
+	wg.Wait()
+
+}
+
+func simulateVehicle(vin string, serverAddr string, wg *sync.WaitGroup) {
+	defer wg.Done()
+	conn, err := net.Dial("tcp", serverAddr) //connect
 	if err != nil {
 		fmt.Printf("Failed to connect to gateway: %v\n", err)
 		return
@@ -28,11 +43,11 @@ func main() {
 		}
 
 		msg := &pb.VehicleTelemetry{
-			Vin:         "SIM-0001",
+			Vin:         vin,
 			TimestampMs: time.Now().UnixMilli(),
 			SpeedKmh:    speed,
 			Gear:        gear,
-			VehicleMode: "All-Purpose",
+			VehicleMode: "Standard",
 
 			// Random GPS wandering near San Francisco
 			Location: &pb.GPSLocation{
@@ -74,8 +89,7 @@ func main() {
 		conn.Write(header)
 		conn.Write(data)
 
-		time.Sleep(100 * time.Millisecond)
-
+		time.Sleep(1 * time.Second)
 	}
 
 }

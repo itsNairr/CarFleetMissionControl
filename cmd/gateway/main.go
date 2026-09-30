@@ -61,7 +61,7 @@ func main() {
 	
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 
-	pool := worker.NewTelemetryWorkerPool(5, 100) //5 Workers with a shared queue of 100
+	pool := worker.NewTelemetryWorkerPool(10, 100) //10 Workers with a shared queue of 100
 	pool.Start()
 
 	//Setup TCP connection

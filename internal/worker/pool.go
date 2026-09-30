@@ -30,7 +30,7 @@ func (p *TelemetryWorkerPool) worker(workerID int) {
 	for telemetry := range p.jobQueue {
 		fmt.Printf("[Worker %d] Processing VIN: %s | Speed: %.1f km/h\n", workerID, telemetry.GetVin(), telemetry.GetSpeedKmh())
 		// Simulate some processing time
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(5 * time.Millisecond)
 	}
 
 }
