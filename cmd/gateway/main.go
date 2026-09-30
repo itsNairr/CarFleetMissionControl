@@ -44,13 +44,13 @@ func handleConnection(conn net.Conn, pool *worker.TelemetryWorkerPool) {
 			return
 		}
 		// Unmarshal into Protobuf struct
-		var telemetry pb.VehicleTelemetry
-		if err := proto.Unmarshal(payload, &telemetry); err != nil {
+		telemetry := &pb.VehicleTelemetry{}
+		if err := proto.Unmarshal(payload, telemetry); err != nil {
 			fmt.Printf("Failed to unmarshal protobuf: %v\n", err)
 			continue
 		}
 		
-		pool.Enqueue(&telemetry)
+		pool.Enqueue(telemetry)
 	}
 	
 }
