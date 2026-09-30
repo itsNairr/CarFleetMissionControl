@@ -1,0 +1,174 @@
+syntax = "proto3";
+
+package fleet.telemetry.v1;
+
+option go_package = "github.com/itsnairr/fleet-telemetry-engine/internal/protocol";
+
+message GPSLocation {
+  double latitude = 1;
+  double longitude = 2;
+  double altitude = 3;
+  double speed = 4;
+  double heading = 5;
+  double pdop = 6;
+  double hdop = 7;
+  string location_provider = 8;
+}
+
+enum Gear {
+  GEAR_UNSPECIFIED = 0;
+  GEAR_PARK = 1;
+  GEAR_REVERSE = 2;
+  GEAR_NEUTRAL = 3;
+  GEAR_DRIVE = 4;
+}
+
+message BatteryState {
+  enum BatteryStatus {
+    BATTERY_STATUS_UNSPECIFIED = 0;
+    BATTERY_STATUS_OK = 1;
+    BATTERY_STATUS_CHARGING = 2;
+    BATTERY_STATUS_DISCHARGING = 3;
+    BATTERY_STATUS_FAULT = 4;
+  }
+
+  repeated float cell_voltage = 1;
+  float state_of_charge = 2;
+  float pack_voltage = 3;
+  float pack_current = 4;
+  float max_cell_temperature = 5;
+  float min_cell_temperature = 6;
+  float pack_temperature = 7;
+  float pack_power = 8;
+  float pack_health = 9;
+  float pack_remaining_capacity = 10;
+  int32 pack_cycle_count = 11;
+  BatteryStatus pack_status = 12;
+  float min_cell_voltage = 13;
+  float max_cell_voltage = 14;
+  float low_voltage_battery_volts = 15; // 12V / 16V auxiliary battery
+}
+
+message ChargingState {
+  enum ChargeState {
+    CHARGE_STATE_UNSPECIFIED = 0;
+    CHARGE_STATE_DISCONNECTED = 1;
+    CHARGE_STATE_CONNECTED = 2;
+    CHARGE_STATE_CHARGING = 3;
+    CHARGE_STATE_COMPLETE = 4;
+    CHARGE_STATE_STOPPED = 5;
+    CHARGE_STATE_FAULT = 6;
+  }
+
+  enum ChargerType {
+    CHARGER_TYPE_UNSPECIFIED = 0;
+    CHARGER_TYPE_AC_LEVEL_1 = 1;
+    CHARGER_TYPE_AC_LEVEL_2 = 2;
+    CHARGER_TYPE_DC_FAST = 3;
+  }
+
+  ChargeState state = 1;
+  ChargerType charger_type = 2;
+  bool charge_port_door_open = 3;
+  bool charge_port_latch_engaged = 4;
+
+  // Electrical metrics
+  float charger_voltage = 5;          // Volts (AC RMS or DC)
+  float charger_actual_current = 6;    // Amperes
+  float charger_pilot_current = 7;     // Max available current offered by EVSE
+  int32 charger_phases = 8;            // 1 or 3 phase AC
+  float charging_power_kw = 9;         // Instantaneous kW
+
+  // Session & Progress metrics
+  float session_energy_added_kwh = 10;
+  float charge_rate_km_per_hour = 11;
+  int32 minutes_to_full_charge = 12;
+  int32 charge_limit_soc_pct = 13;     // Target SoC limit (e.g. 80%)
+  bool battery_preconditioning = 14;   // Battery heating for fast charging
+}
+
+message MotorState {
+  enum MotorPosition {
+    MOTOR_POSITION_UNSPECIFIED = 0;
+    MOTOR_POSITION_REAR = 1;
+    MOTOR_POSITION_FRONT = 2;
+  }
+
+  enum MotorStatus {
+    MOTOR_STATUS_UNSPECIFIED = 0;
+    MOTOR_STATUS_READY_TO_DRIVE = 1;
+    MOTOR_STATUS_READY_TO_CHARGE = 2;
+    MOTOR_STATUS_FAULT = 3;
+  }
+
+  MotorPosition position = 1;
+  int32 rpm = 2;
+  float inverter_temp_celsius = 3;
+  float dc_bus_current = 4;
+  float dc_bus_voltage = 5;
+  float motor_temp_celsius = 6;
+  float throttle_position_pct = 7;
+  float torque_nm = 8;
+  float power_kw = 9;
+  MotorStatus status = 10;
+}
+
+message TirePressure {
+  float front_left_bar = 1;
+  float front_right_bar = 2;
+  float rear_left_bar = 3;
+  float rear_right_bar = 4;
+}
+
+message CabinState {
+  float inside_temp_celsius = 1;
+  float outside_temp_celsius = 2;
+  bool climate_on = 3;
+  bool is_locked = 4;
+  bool sentry_mode_active = 5;
+  bool doors_open = 6;
+  bool frunk_open = 7;
+  bool trunk_open = 8;
+}
+
+message VehicleTelemetry {
+  string vin = 1;
+  int64 timestamp_ms = 2;
+  GPSLocation location = 3;
+
+  // Dynamics & Driver Controls
+  Gear gear = 4;
+  float speed_kmh = 5;
+  float brake_pedal_pct = 6;
+  float odometer_km = 7;
+  float remaining_range_km = 8;
+  string vehicle_mode = 9;
+
+  // Subsystems
+  BatteryState battery_state = 10;
+  ChargingState charging_state = 11;
+  repeated MotorState motor_states = 12;
+  TirePressure tire_pressure = 13;
+  CabinState cabin_state = 14;
+
+  // Active Diagnostic Trouble Codes / Alerts
+  repeated string active_alert_codes = 15;
+}
+
+message VehicleAlert {
+  enum AlertLevel {
+    ALERT_LEVEL_UNSPECIFIED = 0;
+    ALERT_LEVEL_INFO = 1;
+    ALERT_LEVEL_WARNING = 2;
+    ALERT_LEVEL_ERROR = 3;
+    ALERT_LEVEL_CRITICAL = 4;
+  }
+
+  string vin = 1;
+  int64 timestamp_ms = 2;
+  GPSLocation location = 3;
+  AlertLevel level = 4;
+  string code = 5;
+  string description = 6;
+  map<string, string> metadata = 7;
+}
