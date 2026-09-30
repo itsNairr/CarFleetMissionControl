@@ -2,15 +2,23 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
+	"errors"
 
-	pb "github.com/itsnairr/fleet-telemetry-engine/internal/protocol"
 	"github.com/itsnairr/fleet-telemetry-engine/internal/worker"
-	"google.golang.org/protobuf/proto"
 )
+
+func handleConnection(conn net.Conn, pool *worker.TelemetryWorkerPool) {
+	defer conn.Close()
+
+	fmt.Printf("New vehicle connected: %s\n", conn.RemoteAddr().String())
+
+	conn.RemoteAddr().String()
+	
+}
 
 func main() {
 	sigChan := make(chan os.Signal, 1) //Used to catch the Ctrl+C or other termination signals
@@ -21,50 +29,41 @@ func main() {
 	pool := worker.NewTelemetryWorkerPool(5, 100) //5 Workers with a shared queue of 100
 	pool.Start()
 
-	stopProducer := make(chan struct{}) //Used to signal the producer to stop
+	//Setup TCP connection
+	listener, err := net.Listen("tcp", ":8080")
+	if err != nil {
+		fmt.Printf("Failed to bind to port 8080: %v\n", err)
+		return
+	}
 
-	go func() {
-		counter := 1 //Using counter to simulate VIN numbers, and speed
+	defer listener.Close() //Close at the end
+	fmt.Println("Gateway TCP server listening on :8080...")
+
+
+	go func() { //goroutine to not run on main thread
 		for {
-			select {
-			case <-stopProducer: //If the producer is stopped, return
-				return
-			default:
-				msg := &pb.VehicleTelemetry{
-					Vin:         fmt.Sprintf("VIN-%04d", counter),
-					TimestampMs: time.Now().UnixMilli(),
-					Location: &pb.GPSLocation{
-						Latitude:  12.9716,
-						Longitude: 77.5946,
-					},
-					VehicleMode: "DRIVE",
-					Gear:        pb.Gear_GEAR_DRIVE,
-					SpeedKmh:    float32(20 + (counter%50)*2),
+			conn, err := listener.Accept()
+			if err != nil {
+				// When we shutdown, listener.Close() is called, which causes Accept() to return net.ErrClosed.
+				// This is a normal, clean shutdown—not a crash.
+				if errors.Is(err, net.ErrClosed) {
+					fmt.Println("TCP listener closed cleanly.")
+					return
 				}
-
-				// Simulate wire serialization & deserialization
-				data, err := proto.Marshal(msg)
-				if err == nil {
-					var received pb.VehicleTelemetry
-					if err := proto.Unmarshal(data, &received); err == nil {
-						if ok := pool.Enqueue(&received); !ok {
-							fmt.Printf("[ALERT] Queue full! Dropped packet for VIN: %s\n", received.GetVin())
-						}
-					}
-				}
-
-				counter++
-				time.Sleep(10 * time.Millisecond) //Cooldown
+				fmt.Printf("Accept error: %v\n", err)
+				continue
 			}
+
+			// Handle this specific vehicle concurrently without blocking other cars!
+			go handleConnection(conn, pool)
 		}
 	}()
 
 	fmt.Println("Gateway running. Press Ctrl+C to shut down gracefully...")
-
-	sig := <-sigChan
+	
+	//Channel (frozen as there is not a val in sigChan)
+	sig := <-sigChan //Main freezes until Ctrl+C
 	fmt.Printf("\nReceived signal: %s. Initiating graceful shutdown...\n", sig)
-
-	close(stopProducer)
 
 	pool.Stop()
 
