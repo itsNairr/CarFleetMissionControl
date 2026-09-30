@@ -90,8 +90,14 @@ message ChargingState {
 message MotorState {
   enum MotorPosition {
     MOTOR_POSITION_UNSPECIFIED = 0;
-    MOTOR_POSITION_REAR = 1;
-    MOTOR_POSITION_FRONT = 2;
+    // Single / Axle-based dual motor setups (Tesla Model 3/Y, Ford, etc.)
+    MOTOR_POSITION_FRONT = 1;
+    MOTOR_POSITION_REAR = 2;
+    // Independent wheel quad-motor setups (Rivian R1T Quad, Cybertruck Cyberbeast, etc.)
+    MOTOR_POSITION_FRONT_LEFT = 3;
+    MOTOR_POSITION_FRONT_RIGHT = 4;
+    MOTOR_POSITION_REAR_LEFT = 5;
+    MOTOR_POSITION_REAR_RIGHT = 6;
   }
 
   enum MotorStatus {
@@ -125,10 +131,55 @@ message CabinState {
   float outside_temp_celsius = 2;
   bool climate_on = 3;
   bool is_locked = 4;
-  bool sentry_mode_active = 5;
-  bool doors_open = 6;
-  bool frunk_open = 7;
-  bool trunk_open = 8;
+  bool sentry_or_guard_mode_active = 5; // Camera security (Tesla Sentry / Rivian Gear Guard)
+
+  // Passenger closures (Sedans, SUVs, Trucks)
+  bool driver_door_open = 6;
+  bool passenger_door_open = 7;
+  bool rear_left_door_open = 8;
+  bool rear_right_door_open = 9;
+  bool frunk_open = 10;
+  bool trunk_or_liftgate_open = 11;     // Passenger car trunk or SUV rear liftgate
+}
+
+// Active/Air Suspension & Inclinometer (Rivian R1T, Cybertruck, Model S/X, etc.)
+message SuspensionState {
+  enum RideHeight {
+    RIDE_HEIGHT_UNSPECIFIED = 0;
+    RIDE_HEIGHT_VERY_LOW = 1;
+    RIDE_HEIGHT_LOW = 2;
+    RIDE_HEIGHT_STANDARD = 3;
+    RIDE_HEIGHT_HIGH = 4;
+    RIDE_HEIGHT_VERY_HIGH = 5;
+  }
+
+  RideHeight ride_height = 1;
+  float ground_clearance_mm = 2;
+  float pitch_degrees = 3; // Inclinometer: front/rear pitch (camp mode auto-leveling & off-roading)
+  float roll_degrees = 4;  // Inclinometer: side-to-side roll
+}
+
+// ============================================================================
+// TRUCK-SPECIFIC TELEMETRY
+// Explicitly populated for electric pickup trucks (Rivian R1T, Ford F-150
+// Lightning, Tesla Cybertruck, Silverado EV). Omitted/nil for sedans/SUVs.
+// ============================================================================
+message TruckState {
+  // --- Truck Bed & Tailgate Closures ---
+  bool tailgate_open = 1;
+  int32 tonneau_cover_pct_open = 2;       // 0 = fully closed, 100 = fully open
+  bool gear_tunnel_left_open = 3;         // [Rivian R1T specific]
+  bool gear_tunnel_right_open = 4;        // [Rivian R1T specific]
+
+  // --- Towing & Trailer Subsystem ---
+  bool trailer_connected = 5;             // Detected via 7-pin trailer connector
+  float estimated_trailer_weight_kg = 6;  // Auto-calculated from motor torque vs acceleration
+  float trailer_brake_gain = 7;           // Integrated trailer brake controller gain (0.0 - 10.0)
+  bool tow_mode_active = 8;
+
+  // --- Work & Exportable Power (Vehicle-to-Load / V2L) ---
+  bool bed_outlets_active = 9;            // 120V / 240V AC power outlets in the bed
+  float bed_outlets_power_kw = 10;        // Instantaneous power draw from bed outlets
 }
 
 message VehicleTelemetry {
@@ -142,17 +193,24 @@ message VehicleTelemetry {
   float brake_pedal_pct = 6;
   float odometer_km = 7;
   float remaining_range_km = 8;
-  string vehicle_mode = 9;
+  string vehicle_mode = 9; // e.g., "Standard", "Chill", "All-Terrain", "Conserve", "Tow"
 
-  // Subsystems
+  // Common EV Subsystems (All vehicles: Sedan, SUV, Truck, Van)
   BatteryState battery_state = 10;
   ChargingState charging_state = 11;
-  repeated MotorState motor_states = 12;
+  repeated MotorState motor_states = 12; // 1 (RWD), 2 (Dual-Motor AWD), or 4 (Quad-Motor)
   TirePressure tire_pressure = 13;
   CabinState cabin_state = 14;
 
+  // Optional: Active/Air Suspension (Trucks, SUVs, and high-end EVs)
+  SuspensionState suspension_state = 15;
+
+  // Explicit Truck-Specific Subsystem (Rivian R1T, F-150 Lightning, Cybertruck)
+  // Left unset/nil for passenger sedans like Tesla Model 3.
+  TruckState truck_state = 16;
+
   // Active Diagnostic Trouble Codes / Alerts
-  repeated string active_alert_codes = 15;
+  repeated string active_alert_codes = 17;
 }
 
 message VehicleAlert {

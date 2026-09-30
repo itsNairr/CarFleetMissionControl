@@ -248,21 +248,35 @@ type MotorState_MotorPosition int32
 
 const (
 	MotorState_MOTOR_POSITION_UNSPECIFIED MotorState_MotorPosition = 0
-	MotorState_MOTOR_POSITION_REAR        MotorState_MotorPosition = 1
-	MotorState_MOTOR_POSITION_FRONT       MotorState_MotorPosition = 2
+	// Single / Axle-based dual motor setups (Tesla Model 3/Y, Ford, etc.)
+	MotorState_MOTOR_POSITION_FRONT MotorState_MotorPosition = 1
+	MotorState_MOTOR_POSITION_REAR  MotorState_MotorPosition = 2
+	// Independent wheel quad-motor setups (Rivian R1T Quad, Cybertruck Cyberbeast, etc.)
+	MotorState_MOTOR_POSITION_FRONT_LEFT  MotorState_MotorPosition = 3
+	MotorState_MOTOR_POSITION_FRONT_RIGHT MotorState_MotorPosition = 4
+	MotorState_MOTOR_POSITION_REAR_LEFT   MotorState_MotorPosition = 5
+	MotorState_MOTOR_POSITION_REAR_RIGHT  MotorState_MotorPosition = 6
 )
 
 // Enum value maps for MotorState_MotorPosition.
 var (
 	MotorState_MotorPosition_name = map[int32]string{
 		0: "MOTOR_POSITION_UNSPECIFIED",
-		1: "MOTOR_POSITION_REAR",
-		2: "MOTOR_POSITION_FRONT",
+		1: "MOTOR_POSITION_FRONT",
+		2: "MOTOR_POSITION_REAR",
+		3: "MOTOR_POSITION_FRONT_LEFT",
+		4: "MOTOR_POSITION_FRONT_RIGHT",
+		5: "MOTOR_POSITION_REAR_LEFT",
+		6: "MOTOR_POSITION_REAR_RIGHT",
 	}
 	MotorState_MotorPosition_value = map[string]int32{
 		"MOTOR_POSITION_UNSPECIFIED": 0,
-		"MOTOR_POSITION_REAR":        1,
-		"MOTOR_POSITION_FRONT":       2,
+		"MOTOR_POSITION_FRONT":       1,
+		"MOTOR_POSITION_REAR":        2,
+		"MOTOR_POSITION_FRONT_LEFT":  3,
+		"MOTOR_POSITION_FRONT_RIGHT": 4,
+		"MOTOR_POSITION_REAR_LEFT":   5,
+		"MOTOR_POSITION_REAR_RIGHT":  6,
 	}
 )
 
@@ -345,6 +359,64 @@ func (MotorState_MotorStatus) EnumDescriptor() ([]byte, []int) {
 	return file_telemetry_proto_rawDescGZIP(), []int{3, 1}
 }
 
+type SuspensionState_RideHeight int32
+
+const (
+	SuspensionState_RIDE_HEIGHT_UNSPECIFIED SuspensionState_RideHeight = 0
+	SuspensionState_RIDE_HEIGHT_VERY_LOW    SuspensionState_RideHeight = 1
+	SuspensionState_RIDE_HEIGHT_LOW         SuspensionState_RideHeight = 2
+	SuspensionState_RIDE_HEIGHT_STANDARD    SuspensionState_RideHeight = 3
+	SuspensionState_RIDE_HEIGHT_HIGH        SuspensionState_RideHeight = 4
+	SuspensionState_RIDE_HEIGHT_VERY_HIGH   SuspensionState_RideHeight = 5
+)
+
+// Enum value maps for SuspensionState_RideHeight.
+var (
+	SuspensionState_RideHeight_name = map[int32]string{
+		0: "RIDE_HEIGHT_UNSPECIFIED",
+		1: "RIDE_HEIGHT_VERY_LOW",
+		2: "RIDE_HEIGHT_LOW",
+		3: "RIDE_HEIGHT_STANDARD",
+		4: "RIDE_HEIGHT_HIGH",
+		5: "RIDE_HEIGHT_VERY_HIGH",
+	}
+	SuspensionState_RideHeight_value = map[string]int32{
+		"RIDE_HEIGHT_UNSPECIFIED": 0,
+		"RIDE_HEIGHT_VERY_LOW":    1,
+		"RIDE_HEIGHT_LOW":         2,
+		"RIDE_HEIGHT_STANDARD":    3,
+		"RIDE_HEIGHT_HIGH":        4,
+		"RIDE_HEIGHT_VERY_HIGH":   5,
+	}
+)
+
+func (x SuspensionState_RideHeight) Enum() *SuspensionState_RideHeight {
+	p := new(SuspensionState_RideHeight)
+	*p = x
+	return p
+}
+
+func (x SuspensionState_RideHeight) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SuspensionState_RideHeight) Descriptor() protoreflect.EnumDescriptor {
+	return file_telemetry_proto_enumTypes[6].Descriptor()
+}
+
+func (SuspensionState_RideHeight) Type() protoreflect.EnumType {
+	return &file_telemetry_proto_enumTypes[6]
+}
+
+func (x SuspensionState_RideHeight) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SuspensionState_RideHeight.Descriptor instead.
+func (SuspensionState_RideHeight) EnumDescriptor() ([]byte, []int) {
+	return file_telemetry_proto_rawDescGZIP(), []int{6, 0}
+}
+
 type VehicleAlert_AlertLevel int32
 
 const (
@@ -384,11 +456,11 @@ func (x VehicleAlert_AlertLevel) String() string {
 }
 
 func (VehicleAlert_AlertLevel) Descriptor() protoreflect.EnumDescriptor {
-	return file_telemetry_proto_enumTypes[6].Descriptor()
+	return file_telemetry_proto_enumTypes[7].Descriptor()
 }
 
 func (VehicleAlert_AlertLevel) Type() protoreflect.EnumType {
-	return &file_telemetry_proto_enumTypes[6]
+	return &file_telemetry_proto_enumTypes[7]
 }
 
 func (x VehicleAlert_AlertLevel) Number() protoreflect.EnumNumber {
@@ -397,7 +469,7 @@ func (x VehicleAlert_AlertLevel) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use VehicleAlert_AlertLevel.Descriptor instead.
 func (VehicleAlert_AlertLevel) EnumDescriptor() ([]byte, []int) {
-	return file_telemetry_proto_rawDescGZIP(), []int{7, 0}
+	return file_telemetry_proto_rawDescGZIP(), []int{9, 0}
 }
 
 type GPSLocation struct {
@@ -991,17 +1063,21 @@ func (x *TirePressure) GetRearRightBar() float32 {
 }
 
 type CabinState struct {
-	state              protoimpl.MessageState `protogen:"open.v1"`
-	InsideTempCelsius  float32                `protobuf:"fixed32,1,opt,name=inside_temp_celsius,json=insideTempCelsius,proto3" json:"inside_temp_celsius,omitempty"`
-	OutsideTempCelsius float32                `protobuf:"fixed32,2,opt,name=outside_temp_celsius,json=outsideTempCelsius,proto3" json:"outside_temp_celsius,omitempty"`
-	ClimateOn          bool                   `protobuf:"varint,3,opt,name=climate_on,json=climateOn,proto3" json:"climate_on,omitempty"`
-	IsLocked           bool                   `protobuf:"varint,4,opt,name=is_locked,json=isLocked,proto3" json:"is_locked,omitempty"`
-	SentryModeActive   bool                   `protobuf:"varint,5,opt,name=sentry_mode_active,json=sentryModeActive,proto3" json:"sentry_mode_active,omitempty"`
-	DoorsOpen          bool                   `protobuf:"varint,6,opt,name=doors_open,json=doorsOpen,proto3" json:"doors_open,omitempty"`
-	FrunkOpen          bool                   `protobuf:"varint,7,opt,name=frunk_open,json=frunkOpen,proto3" json:"frunk_open,omitempty"`
-	TrunkOpen          bool                   `protobuf:"varint,8,opt,name=trunk_open,json=trunkOpen,proto3" json:"trunk_open,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	state                   protoimpl.MessageState `protogen:"open.v1"`
+	InsideTempCelsius       float32                `protobuf:"fixed32,1,opt,name=inside_temp_celsius,json=insideTempCelsius,proto3" json:"inside_temp_celsius,omitempty"`
+	OutsideTempCelsius      float32                `protobuf:"fixed32,2,opt,name=outside_temp_celsius,json=outsideTempCelsius,proto3" json:"outside_temp_celsius,omitempty"`
+	ClimateOn               bool                   `protobuf:"varint,3,opt,name=climate_on,json=climateOn,proto3" json:"climate_on,omitempty"`
+	IsLocked                bool                   `protobuf:"varint,4,opt,name=is_locked,json=isLocked,proto3" json:"is_locked,omitempty"`
+	SentryOrGuardModeActive bool                   `protobuf:"varint,5,opt,name=sentry_or_guard_mode_active,json=sentryOrGuardModeActive,proto3" json:"sentry_or_guard_mode_active,omitempty"` // Camera security (Tesla Sentry / Rivian Gear Guard)
+	// Passenger closures (Sedans, SUVs, Trucks)
+	DriverDoorOpen      bool `protobuf:"varint,6,opt,name=driver_door_open,json=driverDoorOpen,proto3" json:"driver_door_open,omitempty"`
+	PassengerDoorOpen   bool `protobuf:"varint,7,opt,name=passenger_door_open,json=passengerDoorOpen,proto3" json:"passenger_door_open,omitempty"`
+	RearLeftDoorOpen    bool `protobuf:"varint,8,opt,name=rear_left_door_open,json=rearLeftDoorOpen,proto3" json:"rear_left_door_open,omitempty"`
+	RearRightDoorOpen   bool `protobuf:"varint,9,opt,name=rear_right_door_open,json=rearRightDoorOpen,proto3" json:"rear_right_door_open,omitempty"`
+	FrunkOpen           bool `protobuf:"varint,10,opt,name=frunk_open,json=frunkOpen,proto3" json:"frunk_open,omitempty"`
+	TrunkOrLiftgateOpen bool `protobuf:"varint,11,opt,name=trunk_or_liftgate_open,json=trunkOrLiftgateOpen,proto3" json:"trunk_or_liftgate_open,omitempty"` // Passenger car trunk or SUV rear liftgate
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *CabinState) Reset() {
@@ -1062,16 +1138,37 @@ func (x *CabinState) GetIsLocked() bool {
 	return false
 }
 
-func (x *CabinState) GetSentryModeActive() bool {
+func (x *CabinState) GetSentryOrGuardModeActive() bool {
 	if x != nil {
-		return x.SentryModeActive
+		return x.SentryOrGuardModeActive
 	}
 	return false
 }
 
-func (x *CabinState) GetDoorsOpen() bool {
+func (x *CabinState) GetDriverDoorOpen() bool {
 	if x != nil {
-		return x.DoorsOpen
+		return x.DriverDoorOpen
+	}
+	return false
+}
+
+func (x *CabinState) GetPassengerDoorOpen() bool {
+	if x != nil {
+		return x.PassengerDoorOpen
+	}
+	return false
+}
+
+func (x *CabinState) GetRearLeftDoorOpen() bool {
+	if x != nil {
+		return x.RearLeftDoorOpen
+	}
+	return false
+}
+
+func (x *CabinState) GetRearRightDoorOpen() bool {
+	if x != nil {
+		return x.RearRightDoorOpen
 	}
 	return false
 }
@@ -1083,11 +1180,204 @@ func (x *CabinState) GetFrunkOpen() bool {
 	return false
 }
 
-func (x *CabinState) GetTrunkOpen() bool {
+func (x *CabinState) GetTrunkOrLiftgateOpen() bool {
 	if x != nil {
-		return x.TrunkOpen
+		return x.TrunkOrLiftgateOpen
 	}
 	return false
+}
+
+// Active/Air Suspension & Inclinometer (Rivian R1T, Cybertruck, Model S/X, etc.)
+type SuspensionState struct {
+	state             protoimpl.MessageState     `protogen:"open.v1"`
+	RideHeight        SuspensionState_RideHeight `protobuf:"varint,1,opt,name=ride_height,json=rideHeight,proto3,enum=fleet.telemetry.v1.SuspensionState_RideHeight" json:"ride_height,omitempty"`
+	GroundClearanceMm float32                    `protobuf:"fixed32,2,opt,name=ground_clearance_mm,json=groundClearanceMm,proto3" json:"ground_clearance_mm,omitempty"`
+	PitchDegrees      float32                    `protobuf:"fixed32,3,opt,name=pitch_degrees,json=pitchDegrees,proto3" json:"pitch_degrees,omitempty"` // Inclinometer: front/rear pitch (camp mode auto-leveling & off-roading)
+	RollDegrees       float32                    `protobuf:"fixed32,4,opt,name=roll_degrees,json=rollDegrees,proto3" json:"roll_degrees,omitempty"`    // Inclinometer: side-to-side roll
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *SuspensionState) Reset() {
+	*x = SuspensionState{}
+	mi := &file_telemetry_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SuspensionState) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SuspensionState) ProtoMessage() {}
+
+func (x *SuspensionState) ProtoReflect() protoreflect.Message {
+	mi := &file_telemetry_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SuspensionState.ProtoReflect.Descriptor instead.
+func (*SuspensionState) Descriptor() ([]byte, []int) {
+	return file_telemetry_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *SuspensionState) GetRideHeight() SuspensionState_RideHeight {
+	if x != nil {
+		return x.RideHeight
+	}
+	return SuspensionState_RIDE_HEIGHT_UNSPECIFIED
+}
+
+func (x *SuspensionState) GetGroundClearanceMm() float32 {
+	if x != nil {
+		return x.GroundClearanceMm
+	}
+	return 0
+}
+
+func (x *SuspensionState) GetPitchDegrees() float32 {
+	if x != nil {
+		return x.PitchDegrees
+	}
+	return 0
+}
+
+func (x *SuspensionState) GetRollDegrees() float32 {
+	if x != nil {
+		return x.RollDegrees
+	}
+	return 0
+}
+
+// ============================================================================
+// TRUCK-SPECIFIC TELEMETRY
+// Explicitly populated for electric pickup trucks (Rivian R1T, Ford F-150
+// Lightning, Tesla Cybertruck, Silverado EV). Omitted/nil for sedans/SUVs.
+// ============================================================================
+type TruckState struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// --- Truck Bed & Tailgate Closures ---
+	TailgateOpen        bool  `protobuf:"varint,1,opt,name=tailgate_open,json=tailgateOpen,proto3" json:"tailgate_open,omitempty"`
+	TonneauCoverPctOpen int32 `protobuf:"varint,2,opt,name=tonneau_cover_pct_open,json=tonneauCoverPctOpen,proto3" json:"tonneau_cover_pct_open,omitempty"` // 0 = fully closed, 100 = fully open
+	GearTunnelLeftOpen  bool  `protobuf:"varint,3,opt,name=gear_tunnel_left_open,json=gearTunnelLeftOpen,proto3" json:"gear_tunnel_left_open,omitempty"`    // [Rivian R1T specific]
+	GearTunnelRightOpen bool  `protobuf:"varint,4,opt,name=gear_tunnel_right_open,json=gearTunnelRightOpen,proto3" json:"gear_tunnel_right_open,omitempty"` // [Rivian R1T specific]
+	// --- Towing & Trailer Subsystem ---
+	TrailerConnected         bool    `protobuf:"varint,5,opt,name=trailer_connected,json=trailerConnected,proto3" json:"trailer_connected,omitempty"`                              // Detected via 7-pin trailer connector
+	EstimatedTrailerWeightKg float32 `protobuf:"fixed32,6,opt,name=estimated_trailer_weight_kg,json=estimatedTrailerWeightKg,proto3" json:"estimated_trailer_weight_kg,omitempty"` // Auto-calculated from motor torque vs acceleration
+	TrailerBrakeGain         float32 `protobuf:"fixed32,7,opt,name=trailer_brake_gain,json=trailerBrakeGain,proto3" json:"trailer_brake_gain,omitempty"`                           // Integrated trailer brake controller gain (0.0 - 10.0)
+	TowModeActive            bool    `protobuf:"varint,8,opt,name=tow_mode_active,json=towModeActive,proto3" json:"tow_mode_active,omitempty"`
+	// --- Work & Exportable Power (Vehicle-to-Load / V2L) ---
+	BedOutletsActive  bool    `protobuf:"varint,9,opt,name=bed_outlets_active,json=bedOutletsActive,proto3" json:"bed_outlets_active,omitempty"`        // 120V / 240V AC power outlets in the bed
+	BedOutletsPowerKw float32 `protobuf:"fixed32,10,opt,name=bed_outlets_power_kw,json=bedOutletsPowerKw,proto3" json:"bed_outlets_power_kw,omitempty"` // Instantaneous power draw from bed outlets
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *TruckState) Reset() {
+	*x = TruckState{}
+	mi := &file_telemetry_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TruckState) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TruckState) ProtoMessage() {}
+
+func (x *TruckState) ProtoReflect() protoreflect.Message {
+	mi := &file_telemetry_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TruckState.ProtoReflect.Descriptor instead.
+func (*TruckState) Descriptor() ([]byte, []int) {
+	return file_telemetry_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *TruckState) GetTailgateOpen() bool {
+	if x != nil {
+		return x.TailgateOpen
+	}
+	return false
+}
+
+func (x *TruckState) GetTonneauCoverPctOpen() int32 {
+	if x != nil {
+		return x.TonneauCoverPctOpen
+	}
+	return 0
+}
+
+func (x *TruckState) GetGearTunnelLeftOpen() bool {
+	if x != nil {
+		return x.GearTunnelLeftOpen
+	}
+	return false
+}
+
+func (x *TruckState) GetGearTunnelRightOpen() bool {
+	if x != nil {
+		return x.GearTunnelRightOpen
+	}
+	return false
+}
+
+func (x *TruckState) GetTrailerConnected() bool {
+	if x != nil {
+		return x.TrailerConnected
+	}
+	return false
+}
+
+func (x *TruckState) GetEstimatedTrailerWeightKg() float32 {
+	if x != nil {
+		return x.EstimatedTrailerWeightKg
+	}
+	return 0
+}
+
+func (x *TruckState) GetTrailerBrakeGain() float32 {
+	if x != nil {
+		return x.TrailerBrakeGain
+	}
+	return 0
+}
+
+func (x *TruckState) GetTowModeActive() bool {
+	if x != nil {
+		return x.TowModeActive
+	}
+	return false
+}
+
+func (x *TruckState) GetBedOutletsActive() bool {
+	if x != nil {
+		return x.BedOutletsActive
+	}
+	return false
+}
+
+func (x *TruckState) GetBedOutletsPowerKw() float32 {
+	if x != nil {
+		return x.BedOutletsPowerKw
+	}
+	return 0
 }
 
 type VehicleTelemetry struct {
@@ -1101,22 +1391,27 @@ type VehicleTelemetry struct {
 	BrakePedalPct    float32 `protobuf:"fixed32,6,opt,name=brake_pedal_pct,json=brakePedalPct,proto3" json:"brake_pedal_pct,omitempty"`
 	OdometerKm       float32 `protobuf:"fixed32,7,opt,name=odometer_km,json=odometerKm,proto3" json:"odometer_km,omitempty"`
 	RemainingRangeKm float32 `protobuf:"fixed32,8,opt,name=remaining_range_km,json=remainingRangeKm,proto3" json:"remaining_range_km,omitempty"`
-	VehicleMode      string  `protobuf:"bytes,9,opt,name=vehicle_mode,json=vehicleMode,proto3" json:"vehicle_mode,omitempty"`
-	// Subsystems
+	VehicleMode      string  `protobuf:"bytes,9,opt,name=vehicle_mode,json=vehicleMode,proto3" json:"vehicle_mode,omitempty"` // e.g., "Standard", "Chill", "All-Terrain", "Conserve", "Tow"
+	// Common EV Subsystems (All vehicles: Sedan, SUV, Truck, Van)
 	BatteryState  *BatteryState  `protobuf:"bytes,10,opt,name=battery_state,json=batteryState,proto3" json:"battery_state,omitempty"`
 	ChargingState *ChargingState `protobuf:"bytes,11,opt,name=charging_state,json=chargingState,proto3" json:"charging_state,omitempty"`
-	MotorStates   []*MotorState  `protobuf:"bytes,12,rep,name=motor_states,json=motorStates,proto3" json:"motor_states,omitempty"`
+	MotorStates   []*MotorState  `protobuf:"bytes,12,rep,name=motor_states,json=motorStates,proto3" json:"motor_states,omitempty"` // 1 (RWD), 2 (Dual-Motor AWD), or 4 (Quad-Motor)
 	TirePressure  *TirePressure  `protobuf:"bytes,13,opt,name=tire_pressure,json=tirePressure,proto3" json:"tire_pressure,omitempty"`
 	CabinState    *CabinState    `protobuf:"bytes,14,opt,name=cabin_state,json=cabinState,proto3" json:"cabin_state,omitempty"`
+	// Optional: Active/Air Suspension (Trucks, SUVs, and high-end EVs)
+	SuspensionState *SuspensionState `protobuf:"bytes,15,opt,name=suspension_state,json=suspensionState,proto3" json:"suspension_state,omitempty"`
+	// Explicit Truck-Specific Subsystem (Rivian R1T, F-150 Lightning, Cybertruck)
+	// Left unset/nil for passenger sedans like Tesla Model 3.
+	TruckState *TruckState `protobuf:"bytes,16,opt,name=truck_state,json=truckState,proto3" json:"truck_state,omitempty"`
 	// Active Diagnostic Trouble Codes / Alerts
-	ActiveAlertCodes []string `protobuf:"bytes,15,rep,name=active_alert_codes,json=activeAlertCodes,proto3" json:"active_alert_codes,omitempty"`
+	ActiveAlertCodes []string `protobuf:"bytes,17,rep,name=active_alert_codes,json=activeAlertCodes,proto3" json:"active_alert_codes,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
 
 func (x *VehicleTelemetry) Reset() {
 	*x = VehicleTelemetry{}
-	mi := &file_telemetry_proto_msgTypes[6]
+	mi := &file_telemetry_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1128,7 +1423,7 @@ func (x *VehicleTelemetry) String() string {
 func (*VehicleTelemetry) ProtoMessage() {}
 
 func (x *VehicleTelemetry) ProtoReflect() protoreflect.Message {
-	mi := &file_telemetry_proto_msgTypes[6]
+	mi := &file_telemetry_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1141,7 +1436,7 @@ func (x *VehicleTelemetry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VehicleTelemetry.ProtoReflect.Descriptor instead.
 func (*VehicleTelemetry) Descriptor() ([]byte, []int) {
-	return file_telemetry_proto_rawDescGZIP(), []int{6}
+	return file_telemetry_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *VehicleTelemetry) GetVin() string {
@@ -1242,6 +1537,20 @@ func (x *VehicleTelemetry) GetCabinState() *CabinState {
 	return nil
 }
 
+func (x *VehicleTelemetry) GetSuspensionState() *SuspensionState {
+	if x != nil {
+		return x.SuspensionState
+	}
+	return nil
+}
+
+func (x *VehicleTelemetry) GetTruckState() *TruckState {
+	if x != nil {
+		return x.TruckState
+	}
+	return nil
+}
+
 func (x *VehicleTelemetry) GetActiveAlertCodes() []string {
 	if x != nil {
 		return x.ActiveAlertCodes
@@ -1264,7 +1573,7 @@ type VehicleAlert struct {
 
 func (x *VehicleAlert) Reset() {
 	*x = VehicleAlert{}
-	mi := &file_telemetry_proto_msgTypes[7]
+	mi := &file_telemetry_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1276,7 +1585,7 @@ func (x *VehicleAlert) String() string {
 func (*VehicleAlert) ProtoMessage() {}
 
 func (x *VehicleAlert) ProtoReflect() protoreflect.Message {
-	mi := &file_telemetry_proto_msgTypes[7]
+	mi := &file_telemetry_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1289,7 +1598,7 @@ func (x *VehicleAlert) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VehicleAlert.ProtoReflect.Descriptor instead.
 func (*VehicleAlert) Descriptor() ([]byte, []int) {
-	return file_telemetry_proto_rawDescGZIP(), []int{7}
+	return file_telemetry_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *VehicleAlert) GetVin() string {
@@ -1409,7 +1718,7 @@ const file_telemetry_proto_rawDesc = "" +
 	"\x18CHARGER_TYPE_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17CHARGER_TYPE_AC_LEVEL_1\x10\x01\x12\x1b\n" +
 	"\x17CHARGER_TYPE_AC_LEVEL_2\x10\x02\x12\x18\n" +
-	"\x14CHARGER_TYPE_DC_FAST\x10\x03\"\xb3\x05\n" +
+	"\x14CHARGER_TYPE_DC_FAST\x10\x03\"\xb0\x06\n" +
 	"\n" +
 	"MotorState\x12H\n" +
 	"\bposition\x18\x01 \x01(\x0e2,.fleet.telemetry.v1.MotorState.MotorPositionR\bposition\x12\x10\n" +
@@ -1422,11 +1731,15 @@ const file_telemetry_proto_rawDesc = "" +
 	"\ttorque_nm\x18\b \x01(\x02R\btorqueNm\x12\x19\n" +
 	"\bpower_kw\x18\t \x01(\x02R\apowerKw\x12B\n" +
 	"\x06status\x18\n" +
-	" \x01(\x0e2*.fleet.telemetry.v1.MotorState.MotorStatusR\x06status\"b\n" +
+	" \x01(\x0e2*.fleet.telemetry.v1.MotorState.MotorStatusR\x06status\"\xde\x01\n" +
 	"\rMotorPosition\x12\x1e\n" +
-	"\x1aMOTOR_POSITION_UNSPECIFIED\x10\x00\x12\x17\n" +
-	"\x13MOTOR_POSITION_REAR\x10\x01\x12\x18\n" +
-	"\x14MOTOR_POSITION_FRONT\x10\x02\"\x86\x01\n" +
+	"\x1aMOTOR_POSITION_UNSPECIFIED\x10\x00\x12\x18\n" +
+	"\x14MOTOR_POSITION_FRONT\x10\x01\x12\x17\n" +
+	"\x13MOTOR_POSITION_REAR\x10\x02\x12\x1d\n" +
+	"\x19MOTOR_POSITION_FRONT_LEFT\x10\x03\x12\x1e\n" +
+	"\x1aMOTOR_POSITION_FRONT_RIGHT\x10\x04\x12\x1c\n" +
+	"\x18MOTOR_POSITION_REAR_LEFT\x10\x05\x12\x1d\n" +
+	"\x19MOTOR_POSITION_REAR_RIGHT\x10\x06\"\x86\x01\n" +
 	"\vMotorStatus\x12\x1c\n" +
 	"\x18MOTOR_STATUS_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bMOTOR_STATUS_READY_TO_DRIVE\x10\x01\x12 \n" +
@@ -1436,21 +1749,50 @@ const file_telemetry_proto_rawDesc = "" +
 	"\x0efront_left_bar\x18\x01 \x01(\x02R\ffrontLeftBar\x12&\n" +
 	"\x0ffront_right_bar\x18\x02 \x01(\x02R\rfrontRightBar\x12\"\n" +
 	"\rrear_left_bar\x18\x03 \x01(\x02R\vrearLeftBar\x12$\n" +
-	"\x0erear_right_bar\x18\x04 \x01(\x02R\frearRightBar\"\xb5\x02\n" +
+	"\x0erear_right_bar\x18\x04 \x01(\x02R\frearRightBar\"\xf6\x03\n" +
 	"\n" +
 	"CabinState\x12.\n" +
 	"\x13inside_temp_celsius\x18\x01 \x01(\x02R\x11insideTempCelsius\x120\n" +
 	"\x14outside_temp_celsius\x18\x02 \x01(\x02R\x12outsideTempCelsius\x12\x1d\n" +
 	"\n" +
 	"climate_on\x18\x03 \x01(\bR\tclimateOn\x12\x1b\n" +
-	"\tis_locked\x18\x04 \x01(\bR\bisLocked\x12,\n" +
-	"\x12sentry_mode_active\x18\x05 \x01(\bR\x10sentryModeActive\x12\x1d\n" +
+	"\tis_locked\x18\x04 \x01(\bR\bisLocked\x12<\n" +
+	"\x1bsentry_or_guard_mode_active\x18\x05 \x01(\bR\x17sentryOrGuardModeActive\x12(\n" +
+	"\x10driver_door_open\x18\x06 \x01(\bR\x0edriverDoorOpen\x12.\n" +
+	"\x13passenger_door_open\x18\a \x01(\bR\x11passengerDoorOpen\x12-\n" +
+	"\x13rear_left_door_open\x18\b \x01(\bR\x10rearLeftDoorOpen\x12/\n" +
+	"\x14rear_right_door_open\x18\t \x01(\bR\x11rearRightDoorOpen\x12\x1d\n" +
 	"\n" +
-	"doors_open\x18\x06 \x01(\bR\tdoorsOpen\x12\x1d\n" +
+	"frunk_open\x18\n" +
+	" \x01(\bR\tfrunkOpen\x123\n" +
+	"\x16trunk_or_liftgate_open\x18\v \x01(\bR\x13trunkOrLiftgateOpen\"\x80\x03\n" +
+	"\x0fSuspensionState\x12O\n" +
+	"\vride_height\x18\x01 \x01(\x0e2..fleet.telemetry.v1.SuspensionState.RideHeightR\n" +
+	"rideHeight\x12.\n" +
+	"\x13ground_clearance_mm\x18\x02 \x01(\x02R\x11groundClearanceMm\x12#\n" +
+	"\rpitch_degrees\x18\x03 \x01(\x02R\fpitchDegrees\x12!\n" +
+	"\froll_degrees\x18\x04 \x01(\x02R\vrollDegrees\"\xa3\x01\n" +
 	"\n" +
-	"frunk_open\x18\a \x01(\bR\tfrunkOpen\x12\x1d\n" +
+	"RideHeight\x12\x1b\n" +
+	"\x17RIDE_HEIGHT_UNSPECIFIED\x10\x00\x12\x18\n" +
+	"\x14RIDE_HEIGHT_VERY_LOW\x10\x01\x12\x13\n" +
+	"\x0fRIDE_HEIGHT_LOW\x10\x02\x12\x18\n" +
+	"\x14RIDE_HEIGHT_STANDARD\x10\x03\x12\x14\n" +
+	"\x10RIDE_HEIGHT_HIGH\x10\x04\x12\x19\n" +
+	"\x15RIDE_HEIGHT_VERY_HIGH\x10\x05\"\xef\x03\n" +
 	"\n" +
-	"trunk_open\x18\b \x01(\bR\ttrunkOpen\"\xf3\x05\n" +
+	"TruckState\x12#\n" +
+	"\rtailgate_open\x18\x01 \x01(\bR\ftailgateOpen\x123\n" +
+	"\x16tonneau_cover_pct_open\x18\x02 \x01(\x05R\x13tonneauCoverPctOpen\x121\n" +
+	"\x15gear_tunnel_left_open\x18\x03 \x01(\bR\x12gearTunnelLeftOpen\x123\n" +
+	"\x16gear_tunnel_right_open\x18\x04 \x01(\bR\x13gearTunnelRightOpen\x12+\n" +
+	"\x11trailer_connected\x18\x05 \x01(\bR\x10trailerConnected\x12=\n" +
+	"\x1bestimated_trailer_weight_kg\x18\x06 \x01(\x02R\x18estimatedTrailerWeightKg\x12,\n" +
+	"\x12trailer_brake_gain\x18\a \x01(\x02R\x10trailerBrakeGain\x12&\n" +
+	"\x0ftow_mode_active\x18\b \x01(\bR\rtowModeActive\x12,\n" +
+	"\x12bed_outlets_active\x18\t \x01(\bR\x10bedOutletsActive\x12/\n" +
+	"\x14bed_outlets_power_kw\x18\n" +
+	" \x01(\x02R\x11bedOutletsPowerKw\"\x84\a\n" +
 	"\x10VehicleTelemetry\x12\x10\n" +
 	"\x03vin\x18\x01 \x01(\tR\x03vin\x12!\n" +
 	"\ftimestamp_ms\x18\x02 \x01(\x03R\vtimestampMs\x12;\n" +
@@ -1468,8 +1810,11 @@ const file_telemetry_proto_rawDesc = "" +
 	"\fmotor_states\x18\f \x03(\v2\x1e.fleet.telemetry.v1.MotorStateR\vmotorStates\x12E\n" +
 	"\rtire_pressure\x18\r \x01(\v2 .fleet.telemetry.v1.TirePressureR\ftirePressure\x12?\n" +
 	"\vcabin_state\x18\x0e \x01(\v2\x1e.fleet.telemetry.v1.CabinStateR\n" +
-	"cabinState\x12,\n" +
-	"\x12active_alert_codes\x18\x0f \x03(\tR\x10activeAlertCodes\"\x8e\x04\n" +
+	"cabinState\x12N\n" +
+	"\x10suspension_state\x18\x0f \x01(\v2#.fleet.telemetry.v1.SuspensionStateR\x0fsuspensionState\x12?\n" +
+	"\vtruck_state\x18\x10 \x01(\v2\x1e.fleet.telemetry.v1.TruckStateR\n" +
+	"truckState\x12,\n" +
+	"\x12active_alert_codes\x18\x11 \x03(\tR\x10activeAlertCodes\"\x8e\x04\n" +
 	"\fVehicleAlert\x12\x10\n" +
 	"\x03vin\x18\x01 \x01(\tR\x03vin\x12!\n" +
 	"\ftimestamp_ms\x18\x02 \x01(\x03R\vtimestampMs\x12;\n" +
@@ -1508,8 +1853,8 @@ func file_telemetry_proto_rawDescGZIP() []byte {
 	return file_telemetry_proto_rawDescData
 }
 
-var file_telemetry_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
-var file_telemetry_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_telemetry_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
+var file_telemetry_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_telemetry_proto_goTypes = []any{
 	(Gear)(0),                       // 0: fleet.telemetry.v1.Gear
 	(BatteryState_BatteryStatus)(0), // 1: fleet.telemetry.v1.BatteryState.BatteryStatus
@@ -1517,16 +1862,19 @@ var file_telemetry_proto_goTypes = []any{
 	(ChargingState_ChargerType)(0),  // 3: fleet.telemetry.v1.ChargingState.ChargerType
 	(MotorState_MotorPosition)(0),   // 4: fleet.telemetry.v1.MotorState.MotorPosition
 	(MotorState_MotorStatus)(0),     // 5: fleet.telemetry.v1.MotorState.MotorStatus
-	(VehicleAlert_AlertLevel)(0),    // 6: fleet.telemetry.v1.VehicleAlert.AlertLevel
-	(*GPSLocation)(nil),             // 7: fleet.telemetry.v1.GPSLocation
-	(*BatteryState)(nil),            // 8: fleet.telemetry.v1.BatteryState
-	(*ChargingState)(nil),           // 9: fleet.telemetry.v1.ChargingState
-	(*MotorState)(nil),              // 10: fleet.telemetry.v1.MotorState
-	(*TirePressure)(nil),            // 11: fleet.telemetry.v1.TirePressure
-	(*CabinState)(nil),              // 12: fleet.telemetry.v1.CabinState
-	(*VehicleTelemetry)(nil),        // 13: fleet.telemetry.v1.VehicleTelemetry
-	(*VehicleAlert)(nil),            // 14: fleet.telemetry.v1.VehicleAlert
-	nil,                             // 15: fleet.telemetry.v1.VehicleAlert.MetadataEntry
+	(SuspensionState_RideHeight)(0), // 6: fleet.telemetry.v1.SuspensionState.RideHeight
+	(VehicleAlert_AlertLevel)(0),    // 7: fleet.telemetry.v1.VehicleAlert.AlertLevel
+	(*GPSLocation)(nil),             // 8: fleet.telemetry.v1.GPSLocation
+	(*BatteryState)(nil),            // 9: fleet.telemetry.v1.BatteryState
+	(*ChargingState)(nil),           // 10: fleet.telemetry.v1.ChargingState
+	(*MotorState)(nil),              // 11: fleet.telemetry.v1.MotorState
+	(*TirePressure)(nil),            // 12: fleet.telemetry.v1.TirePressure
+	(*CabinState)(nil),              // 13: fleet.telemetry.v1.CabinState
+	(*SuspensionState)(nil),         // 14: fleet.telemetry.v1.SuspensionState
+	(*TruckState)(nil),              // 15: fleet.telemetry.v1.TruckState
+	(*VehicleTelemetry)(nil),        // 16: fleet.telemetry.v1.VehicleTelemetry
+	(*VehicleAlert)(nil),            // 17: fleet.telemetry.v1.VehicleAlert
+	nil,                             // 18: fleet.telemetry.v1.VehicleAlert.MetadataEntry
 }
 var file_telemetry_proto_depIdxs = []int32{
 	1,  // 0: fleet.telemetry.v1.BatteryState.pack_status:type_name -> fleet.telemetry.v1.BatteryState.BatteryStatus
@@ -1534,21 +1882,24 @@ var file_telemetry_proto_depIdxs = []int32{
 	3,  // 2: fleet.telemetry.v1.ChargingState.charger_type:type_name -> fleet.telemetry.v1.ChargingState.ChargerType
 	4,  // 3: fleet.telemetry.v1.MotorState.position:type_name -> fleet.telemetry.v1.MotorState.MotorPosition
 	5,  // 4: fleet.telemetry.v1.MotorState.status:type_name -> fleet.telemetry.v1.MotorState.MotorStatus
-	7,  // 5: fleet.telemetry.v1.VehicleTelemetry.location:type_name -> fleet.telemetry.v1.GPSLocation
-	0,  // 6: fleet.telemetry.v1.VehicleTelemetry.gear:type_name -> fleet.telemetry.v1.Gear
-	8,  // 7: fleet.telemetry.v1.VehicleTelemetry.battery_state:type_name -> fleet.telemetry.v1.BatteryState
-	9,  // 8: fleet.telemetry.v1.VehicleTelemetry.charging_state:type_name -> fleet.telemetry.v1.ChargingState
-	10, // 9: fleet.telemetry.v1.VehicleTelemetry.motor_states:type_name -> fleet.telemetry.v1.MotorState
-	11, // 10: fleet.telemetry.v1.VehicleTelemetry.tire_pressure:type_name -> fleet.telemetry.v1.TirePressure
-	12, // 11: fleet.telemetry.v1.VehicleTelemetry.cabin_state:type_name -> fleet.telemetry.v1.CabinState
-	7,  // 12: fleet.telemetry.v1.VehicleAlert.location:type_name -> fleet.telemetry.v1.GPSLocation
-	6,  // 13: fleet.telemetry.v1.VehicleAlert.level:type_name -> fleet.telemetry.v1.VehicleAlert.AlertLevel
-	15, // 14: fleet.telemetry.v1.VehicleAlert.metadata:type_name -> fleet.telemetry.v1.VehicleAlert.MetadataEntry
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	6,  // 5: fleet.telemetry.v1.SuspensionState.ride_height:type_name -> fleet.telemetry.v1.SuspensionState.RideHeight
+	8,  // 6: fleet.telemetry.v1.VehicleTelemetry.location:type_name -> fleet.telemetry.v1.GPSLocation
+	0,  // 7: fleet.telemetry.v1.VehicleTelemetry.gear:type_name -> fleet.telemetry.v1.Gear
+	9,  // 8: fleet.telemetry.v1.VehicleTelemetry.battery_state:type_name -> fleet.telemetry.v1.BatteryState
+	10, // 9: fleet.telemetry.v1.VehicleTelemetry.charging_state:type_name -> fleet.telemetry.v1.ChargingState
+	11, // 10: fleet.telemetry.v1.VehicleTelemetry.motor_states:type_name -> fleet.telemetry.v1.MotorState
+	12, // 11: fleet.telemetry.v1.VehicleTelemetry.tire_pressure:type_name -> fleet.telemetry.v1.TirePressure
+	13, // 12: fleet.telemetry.v1.VehicleTelemetry.cabin_state:type_name -> fleet.telemetry.v1.CabinState
+	14, // 13: fleet.telemetry.v1.VehicleTelemetry.suspension_state:type_name -> fleet.telemetry.v1.SuspensionState
+	15, // 14: fleet.telemetry.v1.VehicleTelemetry.truck_state:type_name -> fleet.telemetry.v1.TruckState
+	8,  // 15: fleet.telemetry.v1.VehicleAlert.location:type_name -> fleet.telemetry.v1.GPSLocation
+	7,  // 16: fleet.telemetry.v1.VehicleAlert.level:type_name -> fleet.telemetry.v1.VehicleAlert.AlertLevel
+	18, // 17: fleet.telemetry.v1.VehicleAlert.metadata:type_name -> fleet.telemetry.v1.VehicleAlert.MetadataEntry
+	18, // [18:18] is the sub-list for method output_type
+	18, // [18:18] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_telemetry_proto_init() }
@@ -1561,8 +1912,8 @@ func file_telemetry_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_telemetry_proto_rawDesc), len(file_telemetry_proto_rawDesc)),
-			NumEnums:      7,
-			NumMessages:   9,
+			NumEnums:      8,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
