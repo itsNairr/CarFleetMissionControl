@@ -2,43 +2,50 @@ package main
 
 import (
 	"encoding/binary"
+	"flag"
 	"fmt"
 	"net"
+	"strconv"
 	"sync"
 	"time"
 
 	"google.golang.org/protobuf/proto"
 
-	pb "github.com/itsnairr/fleet-telemetry-engine/internal/protocol"
 	"github.com/itsnairr/fleet-telemetry-engine/internal/simulator"
 )
 
-
 func main() {
-	// A sample of real-world fleet vehicles
-	fleetConfigs := []struct {
-		model    pb.VehicleModel
-		scenario simulator.Scenario
-	}{
-		// {pb.VehicleModel_VEHICLE_MODEL_TESLA_CYBERTRUCK, simulator.ScenarioHeavyTowing},
-		// {pb.VehicleModel_VEHICLE_MODEL_RIVIAN_R1T, simulator.ScenarioOffRoadAdventure},
-		// {pb.VehicleModel_VEHICLE_MODEL_TESLA_MODEL_3, simulator.ScenarioHighwayCruising},
-		{pb.VehicleModel_VEHICLE_MODEL_TESLA_MODEL_Y, simulator.ScenarioSupercharging},
-		// {pb.VehicleModel_VEHICLE_MODEL_RIVIAN_EDV, simulator.ScenarioDeliveryStopCycle},
-		// {pb.VehicleModel_VEHICLE_MODEL_TESLA_MODEL_S, simulator.ScenarioTirePuncture},
-		// {pb.VehicleModel_VEHICLE_MODEL_RIVIAN_R1S, simulator.ScenarioWinterColdSoak},
-		// {pb.VehicleModel_VEHICLE_MODEL_TESLA_MODEL_X, simulator.ScenarioAuxBatterySag},
-		// {pb.VehicleModel_VEHICLE_MODEL_TESLA_MODEL_3, simulator.ScenarioUrbanCommute},
-		// {pb.VehicleModel_VEHICLE_MODEL_RIVIAN_R1T, simulator.ScenarioV2LWorksite},
+	numVehiclesFlag := flag.Int("n", 1, "Number of fleet vehicles to simulate") //-n 
+	serverAddrFlag := flag.String("addr", "localhost:8080", "Gateway TCP server address") //-addr
+	flag.Parse()
+
+	count := *numVehiclesFlag
+	if flag.NArg() > 0 {
+		if parsed, err := strconv.Atoi(flag.Arg(0)); err == nil && parsed > 0 {
+			count = parsed
+		}
 	}
+
+	fmt.Printf("🚗 Initializing EV Fleet Simulator: %d vehicles\n", count)
+	fmt.Printf("📍 Telemetry Distribution: California Roads & Metros\n")
+	fmt.Printf("📡 Connecting to Gateway: %s\n\n", *serverAddrFlag)
 
 	var wg sync.WaitGroup
 
-	for i, cfg := range fleetConfigs {
+	for i := 0; i < count; i++ {
 		wg.Add(1)
 		vin := fmt.Sprintf("SIM-%04d", i+1)
-		vehicle := simulator.NewSimulatedVehicle(vin, cfg.model, cfg.scenario)
-		go simulateVehicle(vehicle, "localhost:8080", &wg)
+
+		// Probabilistic scenario assignment (mirroring real-world fleet distribution)
+		scenario := simulator.SelectRandomScenario()
+		// Select compatible vehicle model (EDV for delivery, pickups for towing/V2L, etc.)
+		model := simulator.SelectCompatibleModel(scenario)
+
+		vehicle := simulator.NewSimulatedVehicle(vin, model, scenario)
+
+		// Subtle 5ms stagger to avoid TCP thundering herd on gateway connection accept
+		time.Sleep(5 * time.Millisecond)
+		go simulateVehicle(vehicle, *serverAddrFlag, &wg)
 	}
 
 	wg.Wait()
