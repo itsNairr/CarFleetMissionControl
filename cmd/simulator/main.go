@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
 	"encoding/binary"
 	"flag"
 	"fmt"
 	"net"
+	"os"
+	"os/signal"
 	"strconv"
 	"sync"
+	"syscall"
 	"time"
 
 	"google.golang.org/protobuf/proto"
@@ -15,7 +19,7 @@ import (
 )
 
 func main() {
-	numVehiclesFlag := flag.Int("n", 1, "Number of fleet vehicles to simulate") //-n 
+	numVehiclesFlag := flag.Int("n", 1, "Number of fleet vehicles to simulate")           //-n
 	serverAddrFlag := flag.String("addr", "localhost:8080", "Gateway TCP server address") //-addr
 	flag.Parse()
 
@@ -29,6 +33,9 @@ func main() {
 	fmt.Printf("🚗 Initializing EV Fleet Simulator: %d vehicles\n", count)
 	fmt.Printf("📍 Telemetry Distribution: California Roads & Metros\n")
 	fmt.Printf("📡 Connecting to Gateway: %s\n\n", *serverAddrFlag)
+
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
 	var wg sync.WaitGroup
 
@@ -45,49 +52,89 @@ func main() {
 
 		// Subtle 5ms stagger to avoid TCP thundering herd on gateway connection accept
 		time.Sleep(5 * time.Millisecond)
-		go simulateVehicle(vehicle, *serverAddrFlag, &wg)
+		go simulateVehicle(ctx, vehicle, *serverAddrFlag, &wg)
 	}
 
+	<-ctx.Done()
+	fmt.Println("\n🛑 Shutdown signal received. Disconnecting fleet cleanly...")
 	wg.Wait()
+	fmt.Println("All simulated vehicles stopped. Exiting.")
+
 }
 
-
-func simulateVehicle(v *simulator.SimulatedVehicle, serverAddr string, wg *sync.WaitGroup) {
+func simulateVehicle(ctx context.Context, v *simulator.SimulatedVehicle, serverAddr string, wg *sync.WaitGroup) {
 	defer wg.Done()
-	conn, err := net.Dial("tcp", serverAddr)
-	if err != nil {
-		fmt.Printf("[%s] Failed to connect to gateway: %v\n", v.Vin, err)
-		return
-	}
-	defer conn.Close()
 
-	// Initialize a 1 Hz ticker (rhythmic 1-second ticks)
-	ticker := time.NewTicker(1 * time.Second)
-	defer ticker.Stop() // Cleans up the timer resource when connection terminates
+	backoff := 1 * time.Second
+	maxBackoff := 10 * time.Second
 
-	// Loop blocks on ticker channel instead of sleeping at the bottom
-	for range ticker.C {
-		//Advance vehicle physics & snapshot telemetry
-		v.Tick()
-		msg := v.ToTelemetry()
+	for {
+		// Check if operator pressed Ctrl+C before trying to connect
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
 
-		// Serialize Protobuf
-		data, err := proto.Marshal(msg)
+		conn, err := net.Dial("tcp", serverAddr)
 		if err != nil {
-			fmt.Printf("[%s] Marshal error: %v\n", v.Vin, err)
-			return
+			fmt.Printf("[%s] 📡 Modem searching for gateway... retry in %v\n", v.Vin, backoff)
+			select {
+			case <-ctx.Done():
+				return
+			case <-time.After(backoff):
+				// Exponential backoff
+				backoff *= 2
+				if backoff > maxBackoff {
+					backoff = maxBackoff
+				}
+				continue
+			}
 		}
 
-		// 4-byte length-prefix framing
-		header := make([]byte, 4)
-		binary.BigEndian.PutUint32(header, uint32(len(data)))
+		// Connected, Reset backoff
+		backoff = 1 * time.Second
+		fmt.Printf("[%s] 📶 Connected to gateway\n", v.Vin)
 
-		if _, err := conn.Write(header); err != nil {
-			return
-		}
-		if _, err := conn.Write(data); err != nil {
-			return
-		}
+		// Stream telemetry until socket breaks or Ctrl+C is pressed
+		streamTelemetry(ctx, conn, v)
+		conn.Close()
 	}
 }
 
+func streamTelemetry(ctx context.Context, conn net.Conn, v *simulator.SimulatedVehicle) {
+	// Initialize a 1 Hz ticker
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
+
+	// Loop blocks on ticker channel
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+
+			//Advance vehicle physics & snapshot telemetry
+			v.Tick()
+			msg := v.ToTelemetry()
+
+			// Serialize Protobuf
+			data, err := proto.Marshal(msg)
+			if err != nil {
+				fmt.Printf("[%s] Marshal error: %v\n", v.Vin, err)
+				return
+			}
+
+			// 4-byte length-prefix framing
+			header := make([]byte, 4)
+			binary.BigEndian.PutUint32(header, uint32(len(data)))
+
+			if _, err := conn.Write(header); err != nil {
+				return
+			}
+			if _, err := conn.Write(data); err != nil {
+				return
+			}
+		}
+	}
+}

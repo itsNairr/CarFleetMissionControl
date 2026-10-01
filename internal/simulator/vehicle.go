@@ -208,6 +208,12 @@ func NewSimulatedVehicle(vin string, model pb.VehicleModel, scenario Scenario) *
 
 	// Tailor starting conditions to the active scenario
 	switch scenario {
+	case ScenarioHeavyTowing:
+		v.CurrentSpeed = 95.0
+		v.BatterySoC = 80.0
+	case ScenarioOffRoadAdventure:
+		v.CurrentSpeed = 25.0
+		v.BatterySoC = 70.0
 	case ScenarioHighwayCruising:
 		v.CurrentSpeed = 110.0
 		v.BatterySoC = 75.0
@@ -243,6 +249,14 @@ func (v *SimulatedVehicle) Tick() {
 	case ScenarioHeavyTowing:
 		v.CurrentSpeed = 95.0
 		v.BatterySoC -= 0.014 // Heavy aerodynamic drag & load
+	case ScenarioOffRoadAdventure:
+		// Dynamic off-road crawl / trail riding speeds (15 - 35 km/h)
+		if v.CurrentSpeed < 32.0 {
+			v.CurrentSpeed += 2.0
+		} else {
+			v.CurrentSpeed = 18.0
+		}
+		v.BatterySoC -= 0.009 // High torque quad-motor demand on rough terrain
 	case ScenarioUrbanCommute:
 		// Slight variation around city speeds
 		if v.CurrentSpeed < 45.0 {

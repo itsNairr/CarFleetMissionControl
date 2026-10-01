@@ -55,6 +55,9 @@ func (p *TelemetryWorkerPool) worker(workerID int) {
 		} else if t.GetTruckState().GetTailgateOpen() {
 			statusIcon = "📦"
 			details = "🚪 Tailgate Open"
+		} else if t.GetVehicleMode() == "OFF_ROAD" {
+			statusIcon = "🌲"
+			details = "⛰️ Trail Crawling"
 		}
 
 

@@ -1,5 +1,7 @@
 package session
 
+//Hashmap to hold the active cars in session
+
 import (
 	"fmt"
 	"net"
